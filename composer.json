@@ -1,0 +1,16 @@
+{
+    "name": "propack/api-helper",
+    "description": "This package will helpful to maintain our customized api helper code among all the projects",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3",
+        "php": "^7.2",
+        "spatie/array-to-xml": "^2.8"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "ProPack\\ApiHelper\\": "src/"
+        }
+    }
+}
