@@ -1,6 +1,6 @@
 {
     "name": "lde/api-helper",
-    "description": "This package will helpful to consume API with less efforts.",
+    "description": "Laravel package to help consume REST and XML APIs with little effort.",
     "require": {
         "guzzlehttp/guzzle": "^6.3",
         "php": "^7.2",
