@@ -1,5 +1,5 @@
 <?php
-namespace ProPack\ApiHelper;
+namespace Lde\ApiHelper;
 
 use Illuminate\Support\Facades\Facade;
 

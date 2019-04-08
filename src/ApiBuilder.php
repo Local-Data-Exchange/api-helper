@@ -1,8 +1,10 @@
 <?php
 
-namespace ProPack\ApiHelper;
+namespace Lde\ApiHelper;
 
-use ProPack\ApiHelper\HelperException;
+use Lde\ApiHelper\Events\ApiCallCompleted;
+use Lde\ApiHelper\Events\ApiCallStarting;
+use Lde\ApiHelper\HelperException;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 
