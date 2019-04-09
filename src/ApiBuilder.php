@@ -11,6 +11,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Auth;
 use Spatie\ArrayToXml\ArrayToXml;
+use Lde\ApiHelper\ApiResponse;
 
 class ApiBuilder
 {
@@ -134,7 +135,7 @@ class ApiBuilder
         $api = array_get($config['routes'], $name);
 
         $this->name = $this->connection . "\\" . $name;
-        $object = new ApiBuilder();
+        $object = new ApiResponse();
         if ($api) {
 
             // Raise starting event
@@ -167,27 +168,27 @@ class ApiBuilder
                             $json = $this->processJsonMappings($arguments, $api);
 
                             // Call the API
-                            $response = $this->call($method, $uri, ['json' => $json]);
+                            $object = $this->call($method, $uri, ['json' => $json]);
 
                             break;
                         default:
                             $json = [];
 
                             // Call the API
-                            $response = $this->call($method, $uri);
+                            $object = $this->call($method, $uri);
                     }
 
                     // check for success
-                    if (array_get($response, 'success', false) == true) {
+                    if ($object->success == true) {
                         // Decode JSON body
-                        $object->data = json_decode($response['data'], true);
+                        //$object->data = json_decode($response->data, true);
 
                         Log::info('ApiBuilder->' . $name . '() - Call succeeded', [
                             'api_name' => $this->name,
                             'method' => $method,
                             'uri' => $uri,
                             'params' => $json,
-                            'response' => $response,
+                            'response' => $object,
                         ]);
 
                     } else {
@@ -197,7 +198,7 @@ class ApiBuilder
                             'method' => $method,
                             'uri' => $uri,
                             'params' => $json,
-                            'response' => $response,
+                            'response' => $object,
                         ]);
 
                     }
@@ -220,27 +221,27 @@ class ApiBuilder
                             ]);
 
                             // Call the API
-                            $response = $this->call($method, $uri, ['body' => $xml]);
+                            $object = $this->call($method, $uri, ['body' => $xml]);
 
                             break;
                         default:
                             $xml = '';
 
                             // Call the API
-                            $response = $this->call($method, $uri);
+                            $object = $this->call($method, $uri);
                     }
 
                     // check for success
-                    if (array_get($response, 'success', false) == true) {
+                    if ($object->success == true) {
                         // Decode XML Body
-                        $object->data = json_decode(json_encode(simplexml_load_string($response['data'])), true);
+                        //$object->data = json_decode(json_encode(simplexml_load_string($response->data)), true);
 
                         Log::info('ApiBuilder->' . $name . '() - Call succeeded', [
                             'api_name' => $this->name,
                             'method' => $method,
                             'uri' => $uri,
                             'params' => $xml,
-                            'response' => $response,
+                            'response' => $object,
                         ]);
                     } else {
                         Log::info('ApiBuilder->' . $name . '() - Call failed', [
@@ -248,7 +249,7 @@ class ApiBuilder
                             'method' => $method,
                             'uri' => $uri,
                             'params' => $xml,
-                            'response' => $response,
+                            'response' => $object,
                         ]);
                     }
 
@@ -258,12 +259,12 @@ class ApiBuilder
             }
 
             // check for success
-            if (array_get($response, 'success', false) == true) {
+            if ($object->success == true) {
                 // Raise completed event
-                ApiCallCompleted::dispatch($this->name, $response, $api, microtime(true) - $startTime);
+                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime);
             } else {
                 // Raise failed event
-                ApiCallCompleted::dispatch($this->name, $response, $api, microtime(true) - $startTime, array_get($response, 'error'));
+                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $object->error);
             }
 
             return $object;
@@ -289,12 +290,10 @@ class ApiBuilder
 
         $tries = 0;
         $success = false;
-        $return = [];
 
         // Check retries and fall back to global retries or fall back to 3
-        $retries = array_get($config, 'number_of_retries', config('api_helper.retries', 3));
-        // dd($retries);
-        $object = new ApiBuilder();
+        $retries = array_get($config, 'number_of_retries', config('api_helper.retries', 3));        
+        $object = new ApiResponse();
         while ($success == false && $tries <= $retries) {
             $tries++;
 
@@ -326,17 +325,15 @@ class ApiBuilder
                     // If we got this far, we have a response.
 
                     // convert xml string into an object
-                    $xmlObj = simplexml_load_string($response->getBody());
+                    $data = simplexml_load_string($response->getBody());
 
-                    //convert xml object into json
-                    $data = json_encode($xmlObj);
                 } else {
 
                     // Send request
                     $response = $client->request($method, $uri, $params);
 
                     // If we got this far, we have a response.
-                    $data = (string) $response->getBody();
+                    $data = json_decode((string) $response->getBody(), true);
                 }
 
                 Log::debug('ApiBuilder->call() - Call succeeded', [
@@ -349,7 +346,7 @@ class ApiBuilder
                 ]);
 
                 $object->success = true;
-                $object->data = $data;
+                $object->body = $data;
                 $object->meta->method = $method;
                 $object->meta->uri = $uri;
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
@@ -380,11 +377,12 @@ class ApiBuilder
 
                 $object->success = false;
                 $object->error = $ex->getMessage();
+                $object->body = $httpBody;
+                $object->meta = new \stdClass();
                 $object->meta->method = $method;
                 $object->meta->uri = $uri;
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
                 $object->meta->status_code = $httpStatusCode;
-                $object->meta->body = $httpBody;
                 $object->meta->tries = $tries;
 
                 // Check if we should retry
@@ -407,7 +405,7 @@ class ApiBuilder
                 $httpStatusCode = 500;
                 $httpStatus = $ex->getMessage();
 
-                Log::info("ApiBuilder threw an Exception", ExceptionHelper::toArray($ex, [
+                Log::info("ApiBuilder threw an Exception", HelperException::toArray($ex, [
                     'api_name' => $this->name,
                     'method' => $method,
                     'uri' => $uri,
@@ -420,6 +418,8 @@ class ApiBuilder
 
                 $object->success = false;
                 $object->error = $ex->getMessage();
+                $object->body = null;
+                $object->meta = new \stdClass();
                 $object->meta->method = $method;
                 $object->meta->uri = $uri;
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
@@ -434,7 +434,7 @@ class ApiBuilder
             'method' => $method,
             'uri' => $uri,
             'params' => $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']),
-            'error' => $return['error'],
+            'error' => $object->error,
             'tries' => $tries,
         ]);
 
