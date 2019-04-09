@@ -38,10 +38,8 @@ This package is useful to consume API's, here is the instruction for installatio
 		'ApiHelper' => Lde\ApiHelper\ApiHelperFacade::class,
 - Next step is to publish config files to use with packages so, run the following command in your terminal to publish config file to config folder.
 
-		php artisan vendor:publish
-- After run this command it will ask you which provider do you want to publish in that select option that contain following option.
+		php artisan vendor:publish  --provider="Lde\ApiHelper\ApiHelperServiceProvider"
 
-		Provider: Lde\ApiHelper\ApiHelperServiceProvider
 - This will publish config file naming **api_helper.php** into config folder.
 
 # Usage

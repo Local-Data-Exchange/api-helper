@@ -3,104 +3,104 @@
 return [
 
     /*
-        |--------------------------------------------------------------------------
-        | Retries
-        |--------------------------------------------------------------------------
-        |
-        | Sets the number of retries to attempt before giving up.
-        |
-        | 0 = Off
-        |
-    */
+    |--------------------------------------------------------------------------
+    | Retries
+    |--------------------------------------------------------------------------
+    |
+    | Sets the number of retries to attempt before giving up.
+    |
+    | 0 = Off
+    |
+     */
 
-    'number_of_retries'       => 3,
+    'number_of_retries' => 3,
 
     /*
-        |--------------------------------------------------------------------------
-        | Default Guzzle Request Options
-        |--------------------------------------------------------------------------
-        |
-        | Sets the default Guzzle request options.
-        |
-        | http://docs.guzzlephp.org/en/stable/request-options.html
-        |
-        | 0 = Off
-        |
-    */
+    |--------------------------------------------------------------------------
+    | Default Guzzle Request Options
+    |--------------------------------------------------------------------------
+    |
+    | Sets the default Guzzle request options.
+    |
+    | http://docs.guzzlephp.org/en/stable/request-options.html
+    |
+    | 0 = Off
+    |
+     */
 
     'default_request_options' => [
-        'http_errors'     => true,
+        'http_errors' => true,
         'connect_timeout' => 10,
-        'timeout'         => 30,
-        'headers'         => [
-            "Accept"       => "application/json",
+        'timeout' => 30,
+        'headers' => [
+            "Accept" => "application/json",
             "Content-Type" => "application/json",
         ],
     ],
 
     // If no connection provided, use default
-    'default'                 => 'httpbin',
+    'default' => 'httpbin',
 
     // Sensitive fields will be masked on the return value and logs
-    'sensitive_fields'        => [
+    'sensitive_fields' => [
         'auth.0',
         'auth.1',
         'headers.apikey',
     ],
 
     // Define all the APIs here
-    'connections'             => [
+    'connections' => [
 
         // HTTPBin
-        'httpbin'      => [
-            'root'      => 'request',
+        'httpbin' => [
+            'root' => 'request',
             // API type: json or xml or view
-            'type'                    => 'json',
+            'type' => 'json',
 
             // API base URL
-            'base_url'                => 'https://httpbin.org',
+            'base_url' => 'https://httpbin.org',
 
             // Default Request options. these are included with all calls unless overwritten
             'default_request_options' => [
-                'http_errors'     => true,
+                'http_errors' => true,
                 'connect_timeout' => 10,
-                'timeout'         => 30,
-                'headers'         => [
-                    "Accept"       => "application/json",
+                'timeout' => 30,
+                'headers' => [
+                    "Accept" => "application/json",
                     "Content-Type" => "application/json",
                 ],
             ],
 
             // number of retries to override global settings.
-            'number_of_retries'       => 0, // 0 = off
+            'number_of_retries' => 0, // 0 = off
 
             // List of API routes we are integrating with
-            'routes'                  => [
+            'routes' => [
 
                 // Sample API to test GET
-                'get'    => [
-                    'method'   => 'GET',
-                    'uri'      => '/get',
+                'get' => [
+                    'method' => 'GET',
+                    'uri' => '/get',
                     'mappings' => [
-                        'path'  => [],
+                        'path' => [],
                         'query' => [
-                            'name'    => 'person.name',
+                            'name' => 'person.name',
                             'surname' => 'person.surname',
-                            'foo'     => 'foo',
+                            'foo' => 'foo',
                         ],
-                        'body'  => [],
+                        'body' => [],
                     ],
                 ],
 
                 // Sample API to test POST
-                'post'   => [
-                    'name'     => 'httpbin',
-                    'method'   => 'POST',
-                    'uri'      => '/post',
-                    'body'     => [
+                'post' => [
+                    'name' => 'httpbin',
+                    'method' => 'POST',
+                    'uri' => '/post',
+                    'body' => [
                         'first_name' => '{name}',
-                        'last_name'  => '{surname}',
-                        'nested'     => [
+                        'last_name' => '{surname}',
+                        'nested' => [
                             'foo' => '{foo}',
                         ],
                     ],
@@ -108,34 +108,18 @@ return [
                         'query' => [
                             'test' => 'person.name',
                         ],
-                        'body'  => [
-                            'name'    => 'person.name',
+                        'body' => [
+                            'name' => 'person.name',
                             'surname' => 'person.surname',
-                            'foo'     => 'foo',
+                            'foo' => 'foo',
                         ],
                     ],
                 ],
 
-                // // Sample API to test POST using a blade view as the body
-                // 'post_view' => [
-                // 'name' => 'httpbin',
-                // 'method' => 'POST',
-                // 'uri' => '/post',
-                // 'body_type' => 'view',
-                // 'body' => [
-                // 'view' => 'api/httpbin/httpbin_post_view',
-                // ],
-                // 'mappings' => [
-                // 'query' => [
-                // 'test' => 'person.name',
-                // ],
-                // ],
-                // ],
-                // Sample API to test DELETE
                 'delete' => [
-                    'name'     => 'httpbin',
-                    'method'   => 'DELETE',
-                    'uri'      => '/delete',
+                    'name' => 'httpbin',
+                    'method' => 'DELETE',
+                    'uri' => '/delete',
                     'mappings' => [
                         'query' => [
                             'id' => 'person.id',
@@ -146,61 +130,61 @@ return [
             ],
         ],
 
-        'mockbin'      => [
-            'root'      => '',
+        'mockbin' => [
+            'root' => '',
             // API type: json or xml or view
-            'type'                    => 'xml',
+            'type' => 'xml',
 
             // API base URL
-            'base_url'                => 'http://mockbin.org',
+            'base_url' => 'http://mockbin.org',
 
             // Default Request options. these are included with all calls unless overwritten
             'default_request_options' => [
-                'http_errors'     => true,
+                'http_errors' => true,
                 'connect_timeout' => 10,
-                'timeout'         => 30,
-                'headers'         => [
-                    "Accept"       => "application/xml",
+                'timeout' => 30,
+                'headers' => [
+                    "Accept" => "application/xml",
                     "Content-Type" => "application/xml",
                 ],
             ],
 
             // number of retries to override global settings.
-            'number_of_retries'       => 0, // 0 = off
+            'number_of_retries' => 0, // 0 = off
 
-            'routes'                  => [
+            'routes' => [
                 // Sample API to test POST using xml as the body
                 'echo' => [
-                    'method'          => 'POST',
-                    'uri'             => '/echo',
+                    'method' => 'POST',
+                    'uri' => '/echo',
                     'request_options' => [ // we can override request_options per API
-                        'http_errors'     => true,
+                        'http_errors' => true,
                         'connect_timeout' => 10,
-                        'timeout'         => 30,
-                        'headers'         => [ // these headers will be set automatically for XML apis. No need to specify them
-                            "Accept"       => "application/xml",
+                        'timeout' => 30,
+                        'headers' => [ // these headers will be set automatically for XML apis. No need to specify them
+                            "Accept" => "application/xml",
                             "Content-Type" => "application/xml",
                         ],
                     ],
-                    'xml_config'      => [
+                    'xml_config' => [
                         'root_element_name' => 'people', // defaults to root if left out
-                        'attributes'        => [
+                        'attributes' => [
                             'xmlns' => 'https://github.com/spatie/array-to-xml',
                         ],
-                        'use_underscores'   => true,
-                        'encoding'          => 'UTF8',
+                        'use_underscores' => true,
+                        'encoding' => 'UTF8',
                     ],
-                    'body'            => [
+                    'body' => [
                         'person' => [
                             '_attributes' => ['class' => '{class}'],
-                            'name'        => '{name}',
-                            'weapon'      => '{weapon}',
+                            'name' => '{name}',
+                            'weapon' => '{weapon}',
                         ],
                     ],
-                    'mappings'        => [
+                    'mappings' => [
                         'body' => [
-                            'class'  => 'person.class',
-                            'name'   => 'person.name',
+                            'class' => 'person.class',
+                            'name' => 'person.name',
                             'weapon' => 'person.weapon',
                         ],
                     ],
