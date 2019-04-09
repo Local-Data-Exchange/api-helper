@@ -4,7 +4,9 @@ namespace Lde\ApiHelper;
 
 use Lde\ApiHelper\Events\ApiCallCompleted;
 use Lde\ApiHelper\Events\ApiCallStarting;
-use Lde\ApiHelper\HelperException;
+use Lde\ApiHelper\Helpers\HelperException;
+use Lde\ApiHelper\Helpers\ObfuscationHelper;
+use Illuminate\Support\Facades\Log;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Auth;
@@ -13,8 +15,6 @@ use Spatie\ArrayToXml\ArrayToXml;
 class ApiBuilder
 {
     public $type;
-
-    public $user;
 
     public $baseUrl;
 
@@ -147,7 +147,6 @@ class ApiBuilder
             if (!$uri = $this->baseUrl . array_get($api, 'uri')) {
                 throw new HelperException("Uri is not configured for {$name} API!");
             }
-            // dd($uri);
 
             // Path mappings
             $uri = $this->processPathMappings($arguments, $api, $uri);
@@ -166,8 +165,6 @@ class ApiBuilder
                         case 'PUT':
                             // JSON mappings
                             $json = $this->processJsonMappings($arguments, $api);
-                            // dd($json);
-                            // var_dump(json_encode($json));
 
                             // Call the API
                             $response = $this->call($method, $uri, ['json' => $json]);
@@ -180,14 +177,12 @@ class ApiBuilder
                             $response = $this->call($method, $uri);
                     }
 
-                    // dd($response);
-
                     // check for success
                     if (array_get($response, 'success', false) == true) {
                         // Decode JSON body
                         $object->data = json_decode($response['data'], true);
 
-                        info('ApiBuilder->' . $name . '() - Call succeeded', [
+                        Log::info('ApiBuilder->' . $name . '() - Call succeeded', [
                             'api_name' => $this->name,
                             'method' => $method,
                             'uri' => $uri,
@@ -197,7 +192,7 @@ class ApiBuilder
 
                     } else {
 
-                        info('ApiBuilder->' . $name . '() - Call failed', [
+                        Log::info('ApiBuilder->' . $name . '() - Call failed', [
                             'api_name' => $this->name,
                             'method' => $method,
                             'uri' => $uri,
@@ -217,8 +212,6 @@ class ApiBuilder
                         case 'PUT':
                             // JSON mappings
                             $xml = $this->processXmlMappings($arguments, $api);
-                            // dd($xml);
-                            // var_dump(xml_encode($xml));
 
                             // Set XML headers
                             $this->addHeaders([
@@ -242,7 +235,7 @@ class ApiBuilder
                         // Decode XML Body
                         $object->data = json_decode(json_encode(simplexml_load_string($response['data'])), true);
 
-                        info('ApiBuilder->' . $name . '() - Call succeeded', [
+                        Log::info('ApiBuilder->' . $name . '() - Call succeeded', [
                             'api_name' => $this->name,
                             'method' => $method,
                             'uri' => $uri,
@@ -250,7 +243,7 @@ class ApiBuilder
                             'response' => $response,
                         ]);
                     } else {
-                        info('ApiBuilder->' . $name . '() - Call failed', [
+                        Log::info('ApiBuilder->' . $name . '() - Call failed', [
                             'api_name' => $this->name,
                             'method' => $method,
                             'uri' => $uri,
@@ -263,8 +256,6 @@ class ApiBuilder
                 default:
                     throw new HelperException('API type ' . $this->type . ' is not defined!');
             }
-
-            // print_r($response);
 
             // check for success
             if (array_get($response, 'success', false) == true) {
@@ -325,7 +316,7 @@ class ApiBuilder
                         unset($params['json']);
                     }
 
-                    \Log::debug('Headers data: ', [
+                    Log::debug('Headers data: ', [
                         'data' => $uri,
                     ]);
 
@@ -343,16 +334,12 @@ class ApiBuilder
 
                     // Send request
                     $response = $client->request($method, $uri, $params);
-                    // dd($response);
 
                     // If we got this far, we have a response.
-                    // TODO:: we assume JSON here - should we?
-                    // $data = json_decode($response->getBody(), true);
                     $data = (string) $response->getBody();
-                    //dd($response);
                 }
 
-                debug('ApiBuilder->call() - Call succeeded', [
+                Log::debug('ApiBuilder->call() - Call succeeded', [
                     'api_name' => $this->name,
                     'method' => $method,
                     'uri' => $uri,
@@ -375,7 +362,7 @@ class ApiBuilder
                 $httpStatus = $ex->hasResponse() && $ex->getResponse() ? $ex->getResponse()->getReasonPhrase() : '';
                 $httpBody = $ex->hasResponse() && $ex->getResponse() ? $ex->getResponse()->getBody()->getContents() : '';
 
-                info("ApiBuilder threw a RequestException", [
+                Log::info("ApiBuilder threw a RequestException", [
                     'api_name' => $this->name,
                     'method' => $method,
                     'uri' => $uri,
@@ -404,7 +391,7 @@ class ApiBuilder
                 $statusesNotToRetry = [400, 401, 404, 406, 422];
 
                 if (in_array($httpStatusCode, $statusesNotToRetry)) {
-                    debug('ApiBuilder->call() - Call failed but status is in blacklist. Not retrying.', [
+                    Log::debug('ApiBuilder->call() - Call failed but status is in blacklist. Not retrying.', [
                         'api_name' => $this->name,
                         'method' => $method,
                         'uri' => $uri,
@@ -420,7 +407,7 @@ class ApiBuilder
                 $httpStatusCode = 500;
                 $httpStatus = $ex->getMessage();
 
-                info("ApiBuilder threw an Exception", ExceptionHelper::toArray($ex, [
+                Log::info("ApiBuilder threw an Exception", ExceptionHelper::toArray($ex, [
                     'api_name' => $this->name,
                     'method' => $method,
                     'uri' => $uri,
@@ -442,7 +429,7 @@ class ApiBuilder
         }
 
         // We got here, this means we ran out of retries
-        info("ApiBuilder '{$method}' had a fatal failure. No more retries. Giving up.", [
+        Log::info("ApiBuilder '{$method}' had a fatal failure. No more retries. Giving up.", [
             'api_name' => $this->name,
             'method' => $method,
             'uri' => $uri,
@@ -507,7 +494,6 @@ class ApiBuilder
                 // we have an @ - callable
                 $callable = explode('@', $value);
                 if (is_callable($callable)) {
-                    //dd(call_user_func($callable, $arguments[0]));
                     $json = str_ireplace('"{' . $key . '}"', (call_user_func($callable, $arguments[0])), $json);
                 }
             } elseif ($this->checkBool(array_get($arguments[0], $value))) {
@@ -516,10 +502,7 @@ class ApiBuilder
             } else {
                 $json = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, 'UNKNOWN'), $json);
             }
-            // var_dump($json);
         }
-        // dd(json_decode($json, true));
-
         return json_decode($json, true);
     }
 
@@ -541,7 +524,6 @@ class ApiBuilder
             'rootElementName' => $rootElementName,
             '_attributes' => $attributes,
         ], $useUnderScores, $encoding);
-        // dd($xml);
 
         foreach (array_get($api, 'mappings.body', []) as $key => $value) {
             // TODO: we can add more support like validator
@@ -557,8 +539,7 @@ class ApiBuilder
             if (stripos($value, '@') !== false) {
                 // we have an @ - callable
                 $callable = explode('@', $value);
-                if (is_callable($callable)) {
-                    //dd(call_user_func($callable, $arguments[0]));
+                if (is_callable($callable)) {                    
                     $xml = str_ireplace('{' . $key . '}', $this->escapeSpecialCharacters((call_user_func($callable, $arguments[0]))), $xml);
                 }
             } elseif ($this->checkBool(array_get($arguments[0], $value))) {
@@ -567,9 +548,7 @@ class ApiBuilder
             } else {
                 $xml = str_ireplace('{' . $key . '}', $this->escapeSpecialCharacters(array_get($arguments[0], $value, 'UNKNOWN')), $xml);
             }
-            // var_dump($json);
         }
-        // dd($xml);
         // XML API don't allow & in value
         $xml = str_ireplace(' & ', ' &amp; ', $xml);
         return $xml;
@@ -613,7 +592,6 @@ class ApiBuilder
         $dot = new \Adbar\Dot($data);
 
         foreach ($paths as $field) {
-            // var_dump(array_get($data, $field));
 
             $string = array_get($data, $field);
 
