@@ -12,5 +12,21 @@
         "psr-4": {
             "Lde\\ApiHelper\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Lde\\ApiHelper\\ApiHelperServiceProvider"
+            ],
+            "aliases": {
+                "ApiHelper": "Lde\\ApiHelper\\ApiHelperFacade"
+            }
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover"
+        ]
     }
 }
