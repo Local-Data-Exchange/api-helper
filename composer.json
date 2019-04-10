@@ -1,5 +1,5 @@
 {
-    "name": "lde/api-helper",
+    "name": "lde/api-helpers",
     "description": "Laravel package to help consume REST and XML APIs with little effort.",
     "require": {
         "guzzlehttp/guzzle": "^6.3",
@@ -12,5 +12,21 @@
         "psr-4": {
             "Lde\\ApiHelper\\": "src/"
         }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Lde\\ApiHelper\\ApiHelperServiceProvider"
+            ],
+            "aliases": {
+                "ApiHelper": "Lde\\ApiHelper\\ApiHelperFacade"
+            }
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover"
+        ]
     }
 }
