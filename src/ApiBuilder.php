@@ -83,22 +83,6 @@ class ApiBuilder
     /**
      * Add header to request options
      *
-     * @param $name
-     * @param $value
-     *
-     * @return ApiBuilder
-     */
-    public function addHeader($name, $value): ApiBuilder
-    {
-        // Add header to requestOptions
-        $this->requestOptions['headers'][$name] = $value;
-
-        return $this;
-    }
-
-    /**
-     * Add header to request options
-     *
      * @param array  $headers
      *
      * @return ApiBuilder
