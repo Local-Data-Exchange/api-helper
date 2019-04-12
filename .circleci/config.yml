@@ -1,81 +1,159 @@
-# PHP CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-php/ for more details
-#
-version: 2
-jobs:
-  test:
-    docker:
-      - image: circleci/php:7.1.23-cli-stretch
+version: 2.1
 
-    working_directory: ~/repo
-
-    steps:
-      - run:
-          name: Install bcmath and gmp extensions
-          command: |
-            sudo apt-get install -y libgmp-dev libxml2-dev
-            sudo docker-php-ext-configure bcmath
-            sudo docker-php-ext-configure gmp
-            sudo docker-php-ext-configure soap
-            sudo docker-php-ext-install bcmath gmp soap
-
-      - checkout
-
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-          - br-dependencies-{{ checksum "app/composer.json" }}
-          # fallback to using the latest cache if no exact match is found
-          - br-dependencies-
-
-      - run:
-          name: Install dependencies
-          command: |
-            cd ~/repo/app
-            composer install -n --prefer-dist --no-scripts
-
-      - save_cache:
-          paths:
-            - ~/repo/app/vendor
-          key: br-dependencies-{{ checksum "app/composer.json" }}
-
-      # run tests!
-      - run:
-          name: Run tests
-          command: |
-            cd ~/repo/app
-            cp .env.testing .env
-            ../../../vendor/bin/phpunit
+commands:
+    install_and_test:
+        parameters:
+            composer_flags:
+                type: string
+                default: ""
+            laravel:
+                type: string
+                default: ""
+        steps:
+            - checkout
+            - run: composer self-update
+            - run: composer require "laravel/framework=<< parameters.laravel >>" --prefer-source --no-interaction --no-suggest
+            - run: composer update << parameters.composer_flags >> --no-interaction --prefer-source
+            - run: vendor/bin/phpunit
 
 workflows:
-  version: 2
-  build_test_deploy:
-    jobs:
-      - test
-      - build_image:
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - develop
-                - master
-      - push_image:
-          requires:
-            - test
-            - build_image
-          filters:
-            branches:
-              only:
-                - develop
-                - master
-      - deploy_dev:
-          requires:
-            - test
-            - build_image
-            - push_image
-          filters:
-            branches:
-              only:
-                - develop
+    version: 2
+    build:
+        jobs:
+            - php71-laravel56
+            - php71-laravel56-prefer-lowest
+            - php72-laravel56
+            - php72-laravel56-prefer-lowest
+            - php73-laravel56
+            - php73-laravel56-prefer-lowest
+            - php71-laravel57
+            - php71-laravel57-prefer-lowest
+            - php72-laravel57
+            - php72-laravel57-prefer-lowest
+            - php73-laravel57
+            - php73-laravel57-prefer-lowest
+            - php71-laravel58
+            - php71-laravel58-prefer-lowest
+            - php72-laravel58
+            - php72-laravel58-prefer-lowest
+            - php73-laravel58
+            - php73-laravel58-prefer-lowest
+
+jobs:
+    php71-laravel56-prefer-lowest:
+        docker:
+            - image: circleci/php:7.1
+        steps:
+            - install_and_test:
+                  laravel: 5.6.*
+                  composer_flags: --prefer-lowest
+    php71-laravel56:
+        docker:
+            - image: circleci/php:7.1
+        steps:
+            - install_and_test:
+                  laravel: 5.6.*
+    php72-laravel56-prefer-lowest:
+        docker:
+            - image: circleci/php:7.2
+        steps:
+            - install_and_test:
+                  laravel: 5.6.*
+                  composer_flags: --prefer-lowest
+    php72-laravel56:
+        docker:
+            - image: circleci/php:7.2
+        steps:
+            - install_and_test:
+                  laravel: 5.6.*
+    php73-laravel56-prefer-lowest:
+        docker:
+            - image: circleci/php:7.3
+        steps:
+            - install_and_test:
+                  laravel: 5.6.*
+                  composer_flags: --prefer-lowest
+    php73-laravel56:
+        docker:
+            - image: circleci/php:7.3
+        steps:
+            - install_and_test:
+                  laravel: 5.6.*
+    php71-laravel57-prefer-lowest:
+        docker:
+            - image: circleci/php:7.1
+        steps:
+            - install_and_test:
+                  laravel: 5.7.*
+                  composer_flags: --prefer-lowest
+    php71-laravel57:
+        docker:
+            - image: circleci/php:7.1
+        steps:
+            - install_and_test:
+                  laravel: 5.7.*
+    php72-laravel57-prefer-lowest:
+        docker:
+            - image: circleci/php:7.2
+        steps:
+            - install_and_test:
+                  laravel: 5.7.*
+                  composer_flags: --prefer-lowest
+    php72-laravel57:
+        docker:
+            - image: circleci/php:7.2
+        steps:
+            - install_and_test:
+                  laravel: 5.7.*
+    php73-laravel57-prefer-lowest:
+        docker:
+            - image: circleci/php:7.3
+        steps:
+            - install_and_test:
+                  laravel: 5.7.*
+                  composer_flags: --prefer-lowest
+    php73-laravel57:
+        docker:
+            - image: circleci/php:7.3
+        steps:
+            - install_and_test:
+                  laravel: 5.7.*
+    php71-laravel58-prefer-lowest:
+        docker:
+            - image: circleci/php:7.1
+        steps:
+            - install_and_test:
+                  laravel: 5.8.*
+                  composer_flags: --prefer-lowest
+    php71-laravel58:
+        docker:
+            - image: circleci/php:7.1
+        steps:
+            - install_and_test:
+                  laravel: 5.8.*
+    php72-laravel58-prefer-lowest:
+        docker:
+            - image: circleci/php:7.2
+        steps:
+            - install_and_test:
+                  laravel: 5.8.*
+                  composer_flags: --prefer-lowest
+    php72-laravel58:
+        docker:
+            - image: circleci/php:7.2
+        steps:
+            - install_and_test:
+                  laravel: 5.8.*
+    php73-laravel58-prefer-lowest:
+        docker:
+            - image: circleci/php:7.3
+        steps:
+            - install_and_test:
+                  laravel: 5.8.*
+                  composer_flags: --prefer-lowest
+    php73-laravel58:
+        docker:
+            - image: circleci/php:7.3
+        steps:
+            - install_and_test:
+                  laravel: 5.8.*
