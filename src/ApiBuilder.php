@@ -133,17 +133,17 @@ class ApiBuilder
         $config = config('api_helper.connections.' . $this->connection);
 
         $api = array_get($config['routes'], $name);
-
+        
         $this->name = $this->connection . "\\" . $name;
         $object = new ApiResponse();
         if ($api) {
 
             // Raise starting event
             ApiCallStarting::dispatch($this->name, $api);
-
+            
             // Method
             $method = strtoupper(array_get($api, 'method', 'GET'));
-
+            
             // Uri
             if (!$uri = $this->baseUrl . array_get($api, 'uri')) {
                 throw new HelperException("Uri is not configured for {$name} API!");
@@ -154,7 +154,7 @@ class ApiBuilder
 
             // Query mappings
             $uri = $this->processQueryMappings($arguments, $api, $uri);
-
+            
             // type
             switch ($this->type) {
                 case 'json':
@@ -205,7 +205,7 @@ class ApiBuilder
 
                     break;
                 case 'xml':
-
+                
                     switch ($method) {
                         // only post and put have a body
                         case 'PATCH':
@@ -213,7 +213,7 @@ class ApiBuilder
                         case 'PUT':
                             // JSON mappings
                             $xml = $this->processXmlMappings($arguments, $api);
-
+                            
                             // Set XML headers
                             $this->addHeaders([
                                 'Accept' => 'application/xml',
@@ -294,6 +294,7 @@ class ApiBuilder
         // Check retries and fall back to global retries or fall back to 3
         $retries = array_get($config, 'number_of_retries', config('api_helper.retries', 3));        
         $object = new ApiResponse();
+        $xml_data = '';
         while ($success == false && $tries <= $retries) {
             $tries++;
 
@@ -302,19 +303,8 @@ class ApiBuilder
 
                 // Merge params
                 $params = array_merge($this->requestOptions, $params);
-
-                if (!empty($config['root'])) {
-
-                    if (isset($params['json'])) {
-                        $xml_data = ArrayToXml::convert($params['json'], '', true, 'UTF-8');
-                        $xml_data = str_replace('<'. $config['root'].'>', '', $xml_data);
-                        $xml_data = str_replace('</'.$config['root'].'>', '', $xml_data);
-
-                        // passing xml data and remove json data
-                        $params['body'] = $xml_data;
-                        unset($params['json']);
-                    }
-
+                if ($this->type == "xml") {                    
+                    
                     Log::debug('Headers data: ', [
                         'data' => $uri,
                     ]);
@@ -325,17 +315,17 @@ class ApiBuilder
                     // If we got this far, we have a response.
 
                     // convert xml string into an object
-                    $data = simplexml_load_string($response->getBody());
-
+                    $data = simplexml_load_string($response->getBody()->getContents());     
+                    
                 } else {
 
                     // Send request
                     $response = $client->request($method, $uri, $params);
-
+                    
                     // If we got this far, we have a response.
                     $data = json_decode((string) $response->getBody(), true);
                 }
-
+                
                 Log::debug('ApiBuilder->call() - Call succeeded', [
                     'api_name' => $this->name,
                     'method' => $method,
@@ -347,12 +337,14 @@ class ApiBuilder
 
                 $object->success = true;
                 $object->body = $data;
+                $object->meta = new \stdClass();
                 $object->meta->method = $method;
                 $object->meta->uri = $uri;
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
                 $object->meta->status_code = $response->getStatusCode();
                 $object->meta->response = $response;
                 $object->meta->tries = $tries;
+                return $object;
             } catch (RequestException $ex) {
 
                 $httpStatusCode = $ex->hasResponse() && $ex->getResponse() ? $ex->getResponse()->getStatusCode() : 500;
@@ -425,9 +417,10 @@ class ApiBuilder
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
                 $object->meta->status_code = $httpStatusCode;
                 $object->meta->tries = $tries;
+                return $object;
             }
         }
-
+        
         // We got here, this means we ran out of retries
         Log::info("ApiBuilder '{$method}' had a fatal failure. No more retries. Giving up.", [
             'api_name' => $this->name,
@@ -515,7 +508,7 @@ class ApiBuilder
     protected function processXmlMappings($arguments, $api): string
     {
         // get xml config
-        $rootElementName = array_get($api, 'xml_config.root_element_name', 'root');
+        $rootElementName = (!empty($api['xml_config']['root_element_name'])) ? $api['xml_config']['root_element_name'] : ((!empty(config('api_helper.connections.'.$this->connection.'.root'))) ? config('api_helper.connections.'.$this->connection.'root') : 'request');
         $attributes = array_get($api, 'xml_config.attributes');
         $useUnderScores = array_get($api, 'xml_config.use_underscores', true);
         $encoding = array_get($api, 'xml_config.encoding', true);
@@ -535,7 +528,7 @@ class ApiBuilder
                 } else {
                     $value = $values[1];
                 }
-            }
+            }            
             if (stripos($value, '@') !== false) {
                 // we have an @ - callable
                 $callable = explode('@', $value);
@@ -563,13 +556,7 @@ class ApiBuilder
 
     private function escapeSpecialCharacters(String $string): String {
 
-        $specialCharacters = config('special_characters');
-        foreach ($specialCharacters as $specialChar) {
-            if (stripos($string, $specialChar) !== false) {
-                $string = str_ireplace(' &' . $specialChar . ';', '', $string);
-            }
-        }
-
+        $string = preg_replace('/&(\w+);/i', '', $string);
         return $string;
     }
 
