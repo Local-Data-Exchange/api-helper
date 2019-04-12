@@ -20,14 +20,6 @@ workflows:
     version: 2
     build:
         jobs:
-            - php71-laravel56
-            - php71-laravel56-prefer-lowest
-            - php72-laravel56
-            - php72-laravel56-prefer-lowest
-            - php73-laravel56
-            - php73-laravel56-prefer-lowest
-            - php71-laravel57
-            - php71-laravel57-prefer-lowest
             - php72-laravel57
             - php72-laravel57-prefer-lowest
             - php73-laravel57
