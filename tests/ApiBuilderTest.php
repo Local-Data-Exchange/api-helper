@@ -3,7 +3,7 @@
 namespace Tests;
 
 use ApiHelper;
-use Tests\TestCase;
+use TestCase;
 
 class ApiBuilderTest extends TestCase
 {
