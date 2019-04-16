@@ -24,14 +24,14 @@ workflows:
             - php72-laravel58-prefer-lowest
 
 jobs:
-    php72-laravel57-prefer-lowest:
+    php72-laravel58-prefer-lowest:
         docker:
             - image: circleci/php:7.2
         steps:
             - install_and_test:
                   laravel: 5.8.*
                   composer_flags: --prefer-lowest
-    php72-laravel57:
+    php72-laravel58:
         docker:
             - image: circleci/php:7.2
         steps:
