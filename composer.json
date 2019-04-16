@@ -5,7 +5,7 @@
         "guzzlehttp/guzzle": "^6.3",
         "php": ">=7.0.0",
         "spatie/array-to-xml": "^2.8",
-        "adbario/php-dot-notation": "2.x-dev"
+        "adbario/php-dot-notation": "^2.2.0"
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
