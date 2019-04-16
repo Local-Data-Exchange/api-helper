@@ -4,7 +4,8 @@
     "require": {
         "guzzlehttp/guzzle": "^6.3",
         "php": ">=7.0.0",
-        "spatie/array-to-xml": "^2.8"
+        "spatie/array-to-xml": "^2.8",
+        "adbario/php-dot-notation": "2.x-dev"
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
@@ -23,10 +24,13 @@
             }
         }
     },
-    "scripts": {
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover"
-        ]
+    "autoload-dev": {
+        "psr-4": {
+            "Lde\\ApiHelper\\Tests\\": "tests"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0|^8.0",
+        "orchestra/testbench": "~3.6.0|~3.7.0|~3.8.0"
     }
 }

@@ -53,7 +53,7 @@ return [
 
         // HTTPBin
         'httpbin' => [
-            'root' => 'request',
+            'root' => '',
             // API type: json or xml or view
             'type' => 'json',
 
@@ -131,7 +131,7 @@ return [
         ],
 
         'mockbin' => [
-            'root' => '',
+            'root' => 'request',
             // API type: json or xml or view
             'type' => 'xml',
 
@@ -167,7 +167,7 @@ return [
                         ],
                     ],
                     'xml_config' => [
-                        'root_element_name' => 'people', // defaults to root if left out
+                        'root_element_name' => 'request', // defaults to root if left out
                         'attributes' => [
                             'xmlns' => 'https://github.com/spatie/array-to-xml',
                         ],
@@ -175,17 +175,17 @@ return [
                         'encoding' => 'UTF8',
                     ],
                     'body' => [
-                        'person' => [
-                            '_attributes' => ['class' => '{class}'],
+                        'request' => [
+                            'attributes' => ['class' => '{class}'],
                             'name' => '{name}',
                             'weapon' => '{weapon}',
                         ],
                     ],
                     'mappings' => [
                         'body' => [
-                            'class' => 'person.class',
-                            'name' => 'person.name',
-                            'weapon' => 'person.weapon',
+                            'class' => 'request.class',
+                            'name' => 'request.name',
+                            'weapon' => 'request.weapon',
                         ],
                     ],
                 ],
