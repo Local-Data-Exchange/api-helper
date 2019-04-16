@@ -5,13 +5,6 @@ use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
-    protected function setUp()
-    {
-        parent::setUp();
-
-        // Your code here
-        
-    }
     protected function getEnvironmentSetUp($app)
     {
         // Setup config file
