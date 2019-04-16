@@ -7,7 +7,7 @@
         "spatie/array-to-xml": "^2.8",
         "adbario/php-dot-notation": "^2.2.0"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true,
     "autoload": {
         "psr-4": {
