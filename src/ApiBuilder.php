@@ -12,6 +12,7 @@ use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Auth;
 use Spatie\ArrayToXml\ArrayToXml;
 use Lde\ApiHelper\ApiResponse;
+use Illuminate\Config\Repository;
 
 class ApiBuilder
 {

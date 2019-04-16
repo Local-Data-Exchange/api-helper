@@ -12,10 +12,9 @@ commands:
         steps:
             - checkout
             - run: echo 'export APP_ENV="test"' >> $BASH_ENV
-            - run: composer self-update
             - run: composer require "laravel/framework=5.7" --prefer-source --no-interaction --no-suggest
             - run: composer update << parameters.composer_flags >> --no-interaction --prefer-source
-            - run: vendor/bin/phpunit
+            - run: ./vendor/bin/phpunit
 
 workflows:
     version: 2

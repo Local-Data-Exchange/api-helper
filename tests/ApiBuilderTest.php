@@ -1,29 +1,32 @@
 <?php
 
-namespace Tests;
+namespace Lde\ApiHelper\Tests;
 
-use ApiHelper;
+use Lde\ApiHelper\ApiBuilder;
+use ApiHelperTest;
 
 class ApiBuilderTest extends TestCase
 {
 
     public function testCanSetConnection()
     {
-        //$api = ApiHelper::api('httpbin');
-        $api = ApiHelper::api('httpbin');
+        $apibuilder = new ApiBuilder();
+        $api = $apibuilder->api('httpbin');
         self::assertEquals($api->connection, 'httpbin');
     }
 
     public function testCanAddHeaders()
     {
-        $api = ApiHelper::api('httpbin')->addHeaders(['test' => 'unit', 'foo' => 'bar']);
+        $apibuilder = new ApiBuilder();
+        $api = $apibuilder->api('httpbin')->addHeaders(['test' => 'unit', 'foo' => 'bar']);
         self::assertEquals($api->requestOptions['headers']['test'], 'unit');
         self::assertEquals($api->requestOptions['headers']['foo'], 'bar');
     }
 
     public function testHttpBinGet()
     {
-        $api = ApiHelper::api('httpbin');
+        $apibuilder = new ApiBuilder();
+        $api = $apibuilder->api('httpbin');
         $response = $api->get(['person' => ['name' => 'John', 'surname' => 'Doe'], 'foo' => 'Foobar']); 
         self::assertTrue($response->success);
         self::assertEquals('John', $response->body['args']['name']);
@@ -33,7 +36,8 @@ class ApiBuilderTest extends TestCase
 
     public function testHttpBinPost()
     {
-        $api = ApiHelper::api('httpbin');
+        $apibuilder = new ApiBuilder();
+        $api = $apibuilder->api('httpbin');
         $response = $api->post(['person' => ['name' => 'John', 'surname' => 'Doe'], 'foo' => 'This is Foobar!']);
         self::assertTrue($response->success);
         self::assertEquals('{"first_name":"John","last_name":"Doe","nested":{"foo":"This is Foobar!"}}', $response->body['data']);
@@ -50,7 +54,8 @@ class ApiBuilderTest extends TestCase
     public function testMagicPostWithAuthHeader()
     {
         $header['x-org-api-key'] = '123456';
-        $api = ApiHelper::api('httpbin')->addHeaders($header);
+        $apibuilder = new ApiBuilder();
+        $api = $apibuilder->api('httpbin')->addHeaders($header);
         $response = $api->post(['person' => ['name' => 'John', 'surname' => 'Doe'], 'foo' => 'This is Foobar!']);
         self::assertTrue($response->success);
         self::assertEquals('123456', $response->body['headers']['X-Org-Api-Key']);
@@ -58,7 +63,8 @@ class ApiBuilderTest extends TestCase
 
     public function testMagicDelete()
     {
-        $api = ApiHelper::api('httpbin');
+        $apibuilder = new ApiBuilder();
+        $api = $apibuilder->api('httpbin');
         $response = $api->delete(['person' => ['id' => 'xyz']]);
         self::assertTrue($response->success);
         self::assertEquals('xyz', $response->body['args']['id']);
@@ -67,12 +73,14 @@ class ApiBuilderTest extends TestCase
 
     public function testHttpBinPostXml()
     {
-        $api = ApiHelper::api('mockbin');
-        $response = $api->echo(['request' => ['name' => 'John', 'class' => 'Barbarian', 'weapon' => 'Dagger']]);
+        $apibuilder = new ApiBuilder();
+        $api = $apibuilder->api('mockbin');
+        $response = $api->echo(['request' => ['name' => 'John', 'class' => 'Barbarian', 'weapon' => 'Dagger']]);        
+        $val = (array) $response->body->request->attributes->class;
         self::assertTrue($response->success);        
         self::assertEquals('John', $response->body->request->name);
         self::assertEquals('Dagger', $response->body->request->weapon);
-        self::assertEquals('Barbarian', $response->body->request['class'][0]);
+        self::assertEquals('Barbarian', $val[0]);
         self::assertEquals('http://mockbin.org/echo', $response->meta->uri);
     }
 

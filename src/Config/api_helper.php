@@ -183,9 +183,9 @@ return [
                     ],
                     'mappings' => [
                         'body' => [
-                            'class' => 'person.class',
-                            'name' => 'person.name',
-                            'weapon' => 'person.weapon',
+                            'class' => 'request.class',
+                            'name' => 'request.name',
+                            'weapon' => 'request.weapon',
                         ],
                     ],
                 ],
