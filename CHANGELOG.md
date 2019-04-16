@@ -16,4 +16,6 @@
 - Updated call() and xmlParsing() to get root element from the config file
 - Added phpunit test cases in "tests" folder
 - Created phpunit.xml file so test cases can be run on any cloud server.
-- Added .travis.yml file 
+- Added orchestra/testbench with phpunit for package testing
+- Updated TestCase added methods for provider and alias, also now able to mock config.
+- Added unit testing with circle ci
