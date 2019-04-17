@@ -541,15 +541,23 @@ class ApiBuilder
 
     private function escapeSpecialCharacters(String $string): String {
 
-        $string = preg_replace('/&(\w+);/i', '', $string);
+        if(!empty($string))
+        {
+            $string = preg_replace('/&(\w+);/i', '', $string);
+        }
         return $string;
+
     }
 
     private function checkBool($string)
     {
-        $string = strtolower($string);
-
-        return (in_array($string, ["true", "false", "1", "0", "yes", "no"], true));
+        if(!empty($string))
+        {
+            $string = strtolower($string);
+            $string = (in_array($string, ["true", "false", "1", "0", "yes", "no"], true));
+        }
+        return $string;
+        
     }
 
     /**
