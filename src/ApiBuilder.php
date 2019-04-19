@@ -2,17 +2,15 @@
 
 namespace Lde\ApiHelper;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Log;
+use Lde\ApiHelper\ApiResponse;
 use Lde\ApiHelper\Events\ApiCallCompleted;
 use Lde\ApiHelper\Events\ApiCallStarting;
 use Lde\ApiHelper\Helpers\HelperException;
 use Lde\ApiHelper\Helpers\ObfuscationHelper;
-use Illuminate\Support\Facades\Log;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Auth;
 use Spatie\ArrayToXml\ArrayToXml;
-use Lde\ApiHelper\ApiResponse;
-use Illuminate\Config\Repository;
 
 class ApiBuilder
 {
@@ -69,7 +67,9 @@ class ApiBuilder
 
         // Set the request options if provided for this conenction. Else use default ones.
         if (array_get($conn, 'default_request_options')) {
-            $this->requestOptions = array_get($conn, 'default_request_options');
+            $option = array_get($conn, 'default_request_options');
+            if(!empty($this->requestOptions['headers'])) { $option['headers'] = array_merge_recursive($option['headers'],$this->requestOptions['headers']); }
+            $this->requestOptions = $option;
         }
 
         // Set the api type
@@ -118,17 +118,17 @@ class ApiBuilder
         $config = config('api_helper.connections.' . $this->connection);
 
         $api = array_get($config['routes'], $name);
-        
+
         $this->name = $this->connection . "\\" . $name;
         $object = new ApiResponse();
         if ($api) {
 
             // Raise starting event
             ApiCallStarting::dispatch($this->name, $api);
-            
+
             // Method
             $method = strtoupper(array_get($api, 'method', 'GET'));
-            
+
             // Uri
             if (!$uri = $this->baseUrl . array_get($api, 'uri')) {
                 throw new HelperException("Uri is not configured for {$name} API!");
@@ -139,7 +139,7 @@ class ApiBuilder
 
             // Query mappings
             $uri = $this->processQueryMappings($arguments, $api, $uri);
-            
+
             // type
             switch ($this->type) {
                 case 'json':
@@ -190,7 +190,7 @@ class ApiBuilder
 
                     break;
                 case 'xml':
-                
+
                     switch ($method) {
                         // only post and put have a body
                         case 'PATCH':
@@ -198,7 +198,7 @@ class ApiBuilder
                         case 'PUT':
                             // JSON mappings
                             $xml = $this->processXmlMappings($arguments, $api);
-                            
+
                             // Set XML headers
                             $this->addHeaders([
                                 'Accept' => 'application/xml',
@@ -277,7 +277,7 @@ class ApiBuilder
         $success = false;
 
         // Check retries and fall back to global retries or fall back to 3
-        $retries = array_get($config, 'number_of_retries', config('api_helper.retries', 3));        
+        $retries = array_get($config, 'number_of_retries', config('api_helper.retries', 3));
         $object = new ApiResponse();
         $xml_data = '';
         while ($success == false && $tries <= $retries) {
@@ -288,8 +288,8 @@ class ApiBuilder
 
                 // Merge params
                 $params = array_merge($this->requestOptions, $params);
-                if ($this->type == "xml") {                    
-                    
+                if ($this->type == "xml") {
+
                     Log::debug('Headers data: ', [
                         'data' => $uri,
                     ]);
@@ -300,17 +300,17 @@ class ApiBuilder
                     // If we got this far, we have a response.
 
                     // convert xml string into an object
-                    $data = simplexml_load_string($response->getBody()->getContents());     
-                    
+                    $data = simplexml_load_string($response->getBody()->getContents());
+
                 } else {
 
                     // Send request
                     $response = $client->request($method, $uri, $params);
-                    
+
                     // If we got this far, we have a response.
                     $data = json_decode((string) $response->getBody(), true);
                 }
-                
+
                 Log::debug('ApiBuilder->call() - Call succeeded', [
                     'api_name' => $this->name,
                     'method' => $method,
@@ -405,7 +405,7 @@ class ApiBuilder
                 return $object;
             }
         }
-        
+
         // We got here, this means we ran out of retries
         Log::info("ApiBuilder '{$method}' had a fatal failure. No more retries. Giving up.", [
             'api_name' => $this->name,
@@ -493,7 +493,7 @@ class ApiBuilder
     protected function processXmlMappings($arguments, $api): string
     {
         // get xml config
-        $rootElementName = (!empty($api['xml_config']['root_element_name'])) ? $api['xml_config']['root_element_name'] : ((!empty(config('api_helper.connections.'.$this->connection.'.root'))) ? config('api_helper.connections.'.$this->connection.'root') : 'request');
+        $rootElementName = (!empty($api['xml_config']['root_element_name'])) ? $api['xml_config']['root_element_name'] : ((!empty(config('api_helper.connections.' . $this->connection . '.root'))) ? config('api_helper.connections.' . $this->connection . 'root') : 'request');
         $attributes = array_get($api, 'xml_config.attributes');
         $useUnderScores = array_get($api, 'xml_config.use_underscores', true);
         $encoding = array_get($api, 'xml_config.encoding', true);
@@ -507,17 +507,17 @@ class ApiBuilder
             // TODO: we can add more support like validator
             if (stripos($value, 'nullable|') !== false) {
                 $values = explode('|', $value);
-                if(array_get($arguments[0], $values[1]) === null || array_get($arguments[0], $values[1]) === '') {
-                    $xml = str_ireplace('<' . $key . '>{'. $key . '}</' . $key . '>', '', $xml);
+                if (array_get($arguments[0], $values[1]) === null || array_get($arguments[0], $values[1]) === '') {
+                    $xml = str_ireplace('<' . $key . '>{' . $key . '}</' . $key . '>', '', $xml);
                     continue;
                 } else {
                     $value = $values[1];
                 }
-            }            
+            }
             if (stripos($value, '@') !== false) {
                 // we have an @ - callable
                 $callable = explode('@', $value);
-                if (is_callable($callable)) {                    
+                if (is_callable($callable)) {
                     $xml = str_ireplace('{' . $key . '}', $this->escapeSpecialCharacters((call_user_func($callable, $arguments[0]))), $xml);
                 }
             } elseif ($this->checkBool(array_get($arguments[0], $value))) {
@@ -537,12 +537,12 @@ class ApiBuilder
      *
      * @return String $string
      * Remove special characters fomr xml string before request to the api
-    */
+     */
 
-    private function escapeSpecialCharacters(String $string): String {
+    private function escapeSpecialCharacters(String $string): String
+    {
 
-        if(!empty($string))
-        {
+        if (!empty($string)) {
             $string = preg_replace('/&(\w+);/i', '', $string);
         }
         return $string;
@@ -551,13 +551,12 @@ class ApiBuilder
 
     private function checkBool($string)
     {
-        if(!empty($string))
-        {
+        if (!empty($string)) {
             $string = strtolower($string);
             $string = (in_array($string, ["true", "false", "1", "0", "yes", "no"], true));
         }
         return $string;
-        
+
     }
 
     /**
