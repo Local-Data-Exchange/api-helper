@@ -26,3 +26,6 @@
 
 ## 0.1.4
 - Added validation in escapeSpecialCharacters() and checkBool() to return value if it is not empty.
+
+## 0.1.5
+- Fixing header has been overwritten by api method, when headers is being set using addHeaders.
