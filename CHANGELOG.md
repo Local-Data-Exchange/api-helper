@@ -29,3 +29,6 @@
 
 ## 0.1.5
 - Fixing header has been overwritten by api method, when headers is being set using addHeaders.
+
+## 0.1.6
+- Applied solution in version 0.1.5 not working properly so now, it is updated with different code flow.
