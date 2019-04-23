@@ -1,12 +1,21 @@
 # CHANGELOG
 
-## 0.1.0
-- Helpers, Config, Events added for ApiBuilder.php .
-- Created Facade and Service provide for package.
+## 0.1.7
+- Due to default headers there is possibility of duplicate headers that is fixed in this version.
 
-## 0.1.1
-- Added ApiResponse.php now response will be object of ApiResponse.
-- Auto package discovery added, now no need to register for provider those who have laravel version >= 5.5 and having dev environment.
+## 0.1.6
+- Applied solution in version 0.1.5 not working properly so now, it is updated with different code flow.
+
+## 0.1.5
+- Fixing header has been overwritten by api method, when headers is being set using addHeaders.
+
+## 0.1.4
+- Added validation in escapeSpecialCharacters() and checkBool() to return value if it is not empty.
+
+## 0.1.3
+- Upgrade laravel/framework version, because incompatible with orchestra/testbench package.
+- Downgrade compatible version of adbario/php-dot-notation from "2.x-dev" to "^2.2.0".
+- Added unit testing with circle ci.
 
 ## 0.1.2
 - Updated README.md file with new document structure.
@@ -19,16 +28,11 @@
 - Added orchestra/testbench with phpunit for package testing.
 - Updated TestCase added methods for provider and alias, also now able to mock config.
 
-## 0.1.3
-- Upgrade laravel/framework version, because incompatible with orchestra/testbench package.
-- Downgrade compatible version of adbario/php-dot-notation from "2.x-dev" to "^2.2.0".
-- Added unit testing with circle ci.
+## 0.1.1
+- Added ApiResponse.php now response will be object of ApiResponse.
+- Auto package discovery added, now no need to register for provider those who have laravel version >= 5.5 and having dev environment.
 
-## 0.1.4
-- Added validation in escapeSpecialCharacters() and checkBool() to return value if it is not empty.
+## 0.1.0
+- Helpers, Config, Events added for ApiBuilder.php .
+- Created Facade and Service provide for package.
 
-## 0.1.5
-- Fixing header has been overwritten by api method, when headers is being set using addHeaders.
-
-## 0.1.6
-- Applied solution in version 0.1.5 not working properly so now, it is updated with different code flow.
