@@ -67,7 +67,11 @@ class ApiBuilder
 
         // Set the request options if provided for this conenction. Else use default ones.
         if (array_get($conn, 'default_request_options')) {
+            $additionalHeaders = $this->requestOptions['headers'];
+            $default = array_get($conn, 'default_request_options.headers');
+            $headers = array_merge($additionalHeaders, $default);
             $this->requestOptions = array_get($conn, 'default_request_options');
+            $this->requestOptions['headers'] = $headers;
         }
 
         // Set the api type
