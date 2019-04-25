@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.9
+- Bug Fixed guzzle http response show 200 even it is fail.
+
 ## 0.1.8
 - Added new logic for combining additional headers, and deafult headers.
  
