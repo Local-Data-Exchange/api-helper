@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.10
+- Remove constructor, also removed redundant code for improvements.
+
 ## 0.1.9
 - Bug Fixed guzzle http response show 200 even it is fail.
 
