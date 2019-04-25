@@ -329,6 +329,7 @@ class ApiBuilder
                 $object->meta->uri = $uri;
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
                 $object->meta->status_code = $response->getStatusCode();
+                $object = $object->withStatus($response->getStatusCode());
                 $object->meta->response = $response;
                 $object->meta->tries = $tries;
                 return $object;
@@ -362,6 +363,7 @@ class ApiBuilder
                 $object->meta->uri = $uri;
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
                 $object->meta->status_code = $httpStatusCode;
+                $object = $object->withStatus($httpStatusCode);
                 $object->meta->tries = $tries;
 
                 // Check if we should retry
@@ -403,6 +405,7 @@ class ApiBuilder
                 $object->meta->uri = $uri;
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
                 $object->meta->status_code = $httpStatusCode;
+                $object = $object->withStatus($httpStatusCode);
                 $object->meta->tries = $tries;
                 return $object;
             }
