@@ -298,7 +298,7 @@ class ApiBuilder
                     // If we got this far, we have a response.
 
                     // convert xml string into an object
-                    $data = simplexml_load_string($response->getBody()->getContents());
+                    $data = (array) simplexml_load_string($response->getBody()->getContents());
 
                 } else {
 
