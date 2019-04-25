@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## 0.1.10
+- Remove constructor, also removed redundant code for improvements.
+
+## 0.1.9
+- Bug Fixed guzzle http response show 200 even it is fail.
+
+## 0.1.8
+- Added new logic for combining additional headers, and deafult headers.
+ 
 ## 0.1.7
 - Due to default headers there is possibility of duplicate headers that is fixed in this version.
 

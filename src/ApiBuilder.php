@@ -27,29 +27,6 @@ class ApiBuilder
     public $sensitiveFields = [];
 
     /**
-     * ApiBuilder constructor.
-     *
-     */
-    public function __construct()
-    {
-
-        // Set the sensitive field array
-        $this->sensitiveFields = config('api_helper.sensitive_fields', []);
-
-        // Set the default request options
-        $this->requestOptions = config('api_helper.default_request_options', []);
-
-        // Set the default connection
-        $this->connection = config('api_helper.default');
-
-        // Set the api type
-        $this->type = config('api_helper.connections.' . $this->connection . '.type');
-
-        // Set the base url
-        $this->baseUrl = config('api_helper.connections.' . $this->connection . '.base_url');
-    }
-
-    /**
      * Sets API connection
      *
      * @param  mixed $connection
@@ -58,16 +35,28 @@ class ApiBuilder
      */
     public function api($connection)
     {
+        // Set the sensitive field array
+        $this->sensitiveFields = config('api_helper.sensitive_fields', []);
+
+        // Setting up connection
+        $this->connection = (!empty($connection)) ? $connection : config('api_helper.default');
+
+        // Set the default request options
+        $this->requestOptions = config('api_helper.default_request_options', []);
+
+        // Check if connection provide in configuration file
         $conn = config('api_helper.connections.' . $connection);
         if (!$conn || !is_array($conn)) {
             throw new HelperException("Connection '$connection' not found!");
         }
 
-        $this->connection = $connection;
-
         // Set the request options if provided for this conenction. Else use default ones.
         if (array_get($conn, 'default_request_options')) {
+            $additionalHeaders = $this->requestOptions['headers'];
+            $default = array_get($conn, 'default_request_options.headers');
+            $headers = array_merge($additionalHeaders, $default);
             $this->requestOptions = array_get($conn, 'default_request_options');
+            $this->requestOptions['headers'] = $headers;
         }
 
         // Set the api type
@@ -325,6 +314,7 @@ class ApiBuilder
                 $object->meta->uri = $uri;
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
                 $object->meta->status_code = $response->getStatusCode();
+                $object = $object->withStatus($response->getStatusCode());
                 $object->meta->response = $response;
                 $object->meta->tries = $tries;
                 return $object;
@@ -358,6 +348,7 @@ class ApiBuilder
                 $object->meta->uri = $uri;
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
                 $object->meta->status_code = $httpStatusCode;
+                $object = $object->withStatus($httpStatusCode);
                 $object->meta->tries = $tries;
 
                 // Check if we should retry
@@ -399,6 +390,7 @@ class ApiBuilder
                 $object->meta->uri = $uri;
                 $object->meta->params = $this->maskFieldValues($params, ['auth.0', 'auth.1', 'headers.apikey']);
                 $object->meta->status_code = $httpStatusCode;
+                $object = $object->withStatus($httpStatusCode);
                 $object->meta->tries = $tries;
                 return $object;
             }
