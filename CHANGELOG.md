@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.1.12
+- Remove space from processXmlMappings methods.
+
+## 0.1.11
+- Converted output of simplexml_load_string into array.
+
 ## 0.1.10
 - Remove constructor, also removed redundant code for improvements.
 
