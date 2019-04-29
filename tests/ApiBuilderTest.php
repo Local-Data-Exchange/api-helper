@@ -27,7 +27,7 @@ class ApiBuilderTest extends TestCase
     {
         $apibuilder = new ApiBuilder();
         $api = $apibuilder->api('httpbin');
-        $response = $api->get(['person' => ['name' => 'John', 'surname' => 'Doe'], 'foo' => 'Foobar']); 
+        $response = $api->get(['person' => ['name' => 'John', 'surname' => 'Doe'], 'foo' => 'Foobar']);
         self::assertTrue($response->success);
         self::assertEquals('John', $response->body['args']['name']);
         self::assertEquals('Doe', $response->body['args']['surname']);
@@ -75,12 +75,12 @@ class ApiBuilderTest extends TestCase
     {
         $apibuilder = new ApiBuilder();
         $api = $apibuilder->api('mockbin');
-        $response = $api->echo(['request' => ['name' => 'John', 'class' => 'Barbarian', 'weapon' => 'Dagger']]);        
-        $val = (array) $response->body->request->attributes->class;
-        self::assertTrue($response->success);        
-        self::assertEquals('John', $response->body->request->name);
-        self::assertEquals('Dagger', $response->body->request->weapon);
-        self::assertEquals('Barbarian', $val[0]);
+        $response = $api->echo(['request' => ['name' => 'John', 'class' => 'Barbarian', 'weapon' => 'Dagger']]);
+        $val = $response->body['request'];
+        self::assertTrue($response->success);
+        self::assertEquals('John', $val->name);
+        self::assertEquals('Dagger', $val->weapon);
+        self::assertEquals('Barbarian', $val->attributes->class[0]);
         self::assertEquals('http://mockbin.org/echo', $response->meta->uri);
     }
 
