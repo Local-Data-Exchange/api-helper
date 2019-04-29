@@ -518,7 +518,7 @@ class ApiBuilder
             }
         }
         // XML API don't allow & in value
-        $xml = str_ireplace(' & ', ' &amp; ', $xml);
+        $xml = str_ireplace('&', ' &amp; ', $xml);
         return $xml;
     }
 
