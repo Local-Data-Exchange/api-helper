@@ -54,6 +54,10 @@ return [
         // HTTPBin
         'httpbin' => [
             'root' => '',
+
+            //Set method name for custom escape characters
+            'character_escape_method' => '',
+
             // API type: json or xml or view
             'type' => 'json',
 
@@ -132,6 +136,10 @@ return [
 
         'mockbin' => [
             'root' => 'request',
+
+            //Set method name for custom escape characters
+            'character_escape_method' => '',
+
             // API type: json or xml or view
             'type' => 'xml',
 

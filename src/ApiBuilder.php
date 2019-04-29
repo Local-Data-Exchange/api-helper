@@ -531,12 +531,23 @@ class ApiBuilder
 
     private function escapeSpecialCharacters(String $string): String
     {
-
         if (!empty($string)) {
-            $string = preg_replace('/&(\w+);/i', '', $string);
+            $custom_escape_method = config('api_helper.connections.'.$this->connection.'.character_escape_method');
+            if(!empty($custom_escape_method))
+            {
+                if (stripos($custom_escape_method, '@') !== false) {
+                    $callable = explode('@', $value);
+                    if(is_callable($custom_escape_method) === true){
+                        $string = call_user_func($callable, $string);
+                    }
+                }
+            }
+            else
+            {
+                $string = preg_replace('/&(\w+);/i', '', $string);
+            }
         }
         return $string;
-
     }
 
     private function checkBool($string)
