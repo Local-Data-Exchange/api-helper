@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.1.13
+- Added custom method support for escaping string in processXmlMappings methods.
+- Added parameter in api_helper config file which defines custom escape string method of user.
+
+## 0.1.12
+- Remove space from processXmlMappings methods.
+
+## 0.1.11
+- Converted output of simplexml_load_string into array.
+
 ## 0.1.10
 - Remove constructor, also removed redundant code for improvements.
 
