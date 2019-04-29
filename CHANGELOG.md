@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.14
+- Bug solved of variable naming convention.
+
 ## 0.1.13
 - Added custom method support for escaping string in processXmlMappings methods.
 - Added parameter in api_helper config file which defines custom escape string method of user.

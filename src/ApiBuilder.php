@@ -536,7 +536,7 @@ class ApiBuilder
             if(!empty($custom_escape_method))
             {
                 if (stripos($custom_escape_method, '@') !== false) {
-                    $callable = explode('@', $value);
+                    $callable = explode('@', $custom_escape_method);
                     if(is_callable($custom_escape_method) === true){
                         $string = call_user_func($callable, $string);
                     }
