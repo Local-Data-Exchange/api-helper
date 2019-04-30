@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.15
+- Callable method return false due to invalid method name.
+
 ## 0.1.14
 - Bug solved of variable naming convention.
 
