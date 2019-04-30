@@ -552,11 +552,11 @@ class ApiBuilder
 
     private function checkBool($string)
     {
-        if (!empty($string)) {
+        if (!empty($string) && gettype($string) === 'string') {
             $string = strtolower($string);
             $string = (in_array($string, ["true", "false", "1", "0", "yes", "no"], true));
+            return $string;
         }
-        return $string;
 
     }
 
