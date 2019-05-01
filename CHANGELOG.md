@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.16
+- Added variable type checking in checkbool method, it will only check if it is string.
+
 ## 0.1.15
 - Callable method return false due to invalid method name.
 
