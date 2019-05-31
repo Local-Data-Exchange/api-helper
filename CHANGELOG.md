@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.17
+- Added new ability in json mappings, now it support nullable fields, which can be define in api_helper.
+
 ## 0.1.16
 - Added variable type checking in checkbool method, it will only check if it is string.
 
