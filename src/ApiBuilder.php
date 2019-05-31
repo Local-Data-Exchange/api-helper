@@ -458,6 +458,19 @@ class ApiBuilder
         $json = json_encode(array_get($api, 'body', []));
         foreach (array_get($api, 'mappings.body', []) as $key => $value) {
 
+            //Remove array key which is nullable, Need to specify "nullable" in api_helper.php config file.
+            if (stripos($value, 'nullable|') !== false) {
+                $values = explode('|', $value);
+                if (array_get($arguments[0], $values[1]) === null || array_get($arguments[0], $values[1]) === '') {
+                    $stringToArray = json_decode($json,true);
+                    unset($stringToArray[$key]);
+                    $json = json_encode($stringToArray);
+                    continue;
+                } else {
+                    $value = $values[1];
+                }
+            }
+
             if (stripos($value, '@') !== false) {
                 // we have an @ - callable
                 $callable = explode('@', $value);
