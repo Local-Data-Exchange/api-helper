@@ -17,7 +17,6 @@ class ApiCallCompleted
     public $apiConfig;
     public $duration;
 
-
     /**
      * Create a new event instance.
      *
@@ -25,12 +24,11 @@ class ApiCallCompleted
      */
     public function __construct($name, $response, $config, $duration)
     {
-        $this->name      = $name;
-        $this->response  = $response;
+        $this->name = $name;
+        $this->response = $response;
         $this->apiConfig = $config;
-        $this->duration  = $duration;
+        $this->duration = $duration;
     }
-
 
     /**
      * Get the channels the event should broadcast on.
@@ -41,6 +39,5 @@ class ApiCallCompleted
     {
         return new PrivateChannel('channel-name');
     }
-
 
 }

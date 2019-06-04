@@ -15,7 +15,6 @@ class ApiCallStarting
     public $name;
     public $apiConfig;
 
-
     /**
      * Create a new event instance.
      *
@@ -23,10 +22,9 @@ class ApiCallStarting
      */
     public function __construct($name, $config)
     {
-        $this->name      = $name;
+        $this->name = $name;
         $this->apiConfig = $config;
     }
-
 
     /**
      * Get the channels the event should broadcast on.
@@ -37,6 +35,5 @@ class ApiCallStarting
     {
         return new PrivateChannel('channel-name');
     }
-
 
 }

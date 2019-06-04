@@ -1,6 +1,7 @@
 <?php
 
 namespace Lde\ApiHelper\Tests;
+
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
@@ -8,17 +9,7 @@ class TestCase extends Orchestra
     protected function getEnvironmentSetUp($app)
     {
         // Setup config file
-        $app['config']->set([ 'api_helper' =>  $this->returnconfig()]);
-    }
-    protected function getPackageProviders($app)
-    {
-        return [ApiHelperServiceProviderTest::class];
-    }  
-    protected function getPackageAliases($app)
-    {
-        return [
-            'ApiHelperTest' => ApiHelperFacadeTest::class
-        ];
+        $app['config']->set(['api_helper' => $this->returnconfig()]);
     }
     private function returnconfig()
     {
@@ -34,9 +25,9 @@ class TestCase extends Orchestra
             | 0 = Off
             |
              */
-        
+
             'number_of_retries' => 3,
-        
+
             /*
             |--------------------------------------------------------------------------
             | Default Guzzle Request Options
@@ -49,7 +40,7 @@ class TestCase extends Orchestra
             | 0 = Off
             |
              */
-        
+
             'default_request_options' => [
                 'http_errors' => true,
                 'connect_timeout' => 10,
@@ -59,29 +50,29 @@ class TestCase extends Orchestra
                     "Content-Type" => "application/json",
                 ],
             ],
-        
+
             // If no connection provided, use default
             'default' => 'httpbin',
-        
+
             // Sensitive fields will be masked on the return value and logs
             'sensitive_fields' => [
                 'auth.0',
                 'auth.1',
                 'headers.apikey',
             ],
-        
+
             // Define all the APIs here
             'connections' => [
-        
+
                 // HTTPBin
                 'httpbin' => [
                     'root' => '',
                     // API type: json or xml or view
                     'type' => 'json',
-        
+
                     // API base URL
                     'base_url' => 'https://httpbin.org',
-        
+
                     // Default Request options. these are included with all calls unless overwritten
                     'default_request_options' => [
                         'http_errors' => true,
@@ -92,13 +83,13 @@ class TestCase extends Orchestra
                             "Content-Type" => "application/json",
                         ],
                     ],
-        
+
                     // number of retries to override global settings.
                     'number_of_retries' => 0, // 0 = off
-        
+
                     // List of API routes we are integrating with
                     'routes' => [
-        
+
                         // Sample API to test GET
                         'get' => [
                             'method' => 'GET',
@@ -113,7 +104,7 @@ class TestCase extends Orchestra
                                 'body' => [],
                             ],
                         ],
-        
+
                         // Sample API to test POST
                         'post' => [
                             'name' => 'httpbin',
@@ -137,7 +128,7 @@ class TestCase extends Orchestra
                                 ],
                             ],
                         ],
-        
+
                         'delete' => [
                             'name' => 'httpbin',
                             'method' => 'DELETE',
@@ -148,18 +139,18 @@ class TestCase extends Orchestra
                                 ],
                             ],
                         ],
-        
+
                     ],
                 ],
-        
+
                 'mockbin' => [
                     'root' => 'request',
                     // API type: json or xml or view
                     'type' => 'xml',
-        
+
                     // API base URL
                     'base_url' => 'http://mockbin.org',
-        
+
                     // Default Request options. these are included with all calls unless overwritten
                     'default_request_options' => [
                         'http_errors' => true,
@@ -170,10 +161,10 @@ class TestCase extends Orchestra
                             "Content-Type" => "application/xml",
                         ],
                     ],
-        
+
                     // number of retries to override global settings.
                     'number_of_retries' => 0, // 0 = off
-        
+
                     'routes' => [
                         // Sample API to test POST using xml as the body
                         'echo' => [

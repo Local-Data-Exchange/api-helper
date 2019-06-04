@@ -15,15 +15,15 @@ class HelperException extends Exception
      *
      * @return array
      */
-    public static function toArray(\Exception $ex, $extra=[])
+    public static function toArray(\Exception $ex, $extra = [])
     {
         return array_merge(
             [
                 'message' => $ex->getMessage(),
-                'code'    => $ex->getCode(),
-                'file'    => $ex->getFile(),
-                'line'    => $ex->getLine(),
-                'trace'   => $ex->getTraceAsString(),
+                'code' => $ex->getCode(),
+                'file' => $ex->getFile(),
+                'line' => $ex->getLine(),
+                'trace' => $ex->getTraceAsString(),
             ],
             $extra
         );
