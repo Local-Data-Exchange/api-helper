@@ -56,26 +56,18 @@ This package is useful to consume API's, here is the instruction for installatio
   
 ## Configuration
 
--  **Note** : This package comes with autodiscover capabilities if you are using Laravel >=5.5 then you don't need to register providers and aliases, but you have to **publish provider step-4**.
-1. After installing package some configuration need to be done to use package, Now go to your **Project->config->app.php** open this file.
-2. We need to register our provider and aliases to use it in project so add the following lines for **providers**
+- To use this apihelper need to export config file to do so run the following command in your terminal to publish config file to config folder.
 
-		Lde\ApiHelper\ApiHelperServiceProvider::class,
-		
-3. Now we have to add aliases in same file add following line in aliases
-
-		'ApiHelper' => Lde\ApiHelper\ApiHelperFacade::class,
-4. Next step is to publish config files to use with packages so, run the following command in your terminal to publish config file to config folder.
-
-		php artisan vendor:publish  --provider="Lde\ApiHelper\ApiHelperServiceProvider"
+	    php artisan vendor:publish  --provider="Lde\ApiHelper\ApiHelperServiceProvider"
 
 - This will publish config file naming **api_helper.php** into config folder.
 
 ## Usage
 
-- To use this package you need to add following namespace where you want to use this package.
+- To use this package you need to add following class where you want to use this package.
 
-		use ApiHelper;
+		use Lde\ApiHelper\ApiBuilder;
+
 		
 ### Methods
 
@@ -88,7 +80,7 @@ This package is useful to consume API's, here is the instruction for installatio
 
 		$headers['Accept'] = "application/json"; 
 		$headers['Content-Type'] = "application/json";  
-		ApiHelper::addHeaders($headers);
+		app(ApiBuilder::class)->addHeaders($headers);
 
 - We will get response in form of object of ApiBuilder.
 
@@ -99,9 +91,11 @@ This package is useful to consume API's, here is the instruction for installatio
 
 - You can also define your own api end point at *api_helper.php* in config file.
 	
-		ApiHelper::api('httpbin')->method_to_call();
+        app(ApiBuilder::class)->api('httpbin')->method_to_call();
 
 - The snippet indicates how you can connect particular api and access their method.
+
+- method_to_call() is the function that you have specified inside *api_helper* connection array.
 
 - This will return object of ApiResponse.
 

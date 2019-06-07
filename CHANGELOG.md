@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.18
+- Updated document and added new docker image files in config for testing different environment.
+
 ## 0.1.17
 - Added new ability in json mappings, now it support nullable fields, which can be define in api_helper.
 
