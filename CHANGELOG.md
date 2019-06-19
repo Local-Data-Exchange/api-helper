@@ -2,6 +2,8 @@
 
 ## 0.1.18
 - Updated document and added new docker image files in config for testing different environment.
+- When value is empty or null at that time we were sending UNKNOWN which is now replaced with null in process json mappings function.
+- For process xml mappings, when it have empty or null values we are removing from that string. Instead of returning UNKNOWN.
 
 ## 0.1.17
 - Added new ability in json mappings, now it support nullable fields, which can be define in api_helper.

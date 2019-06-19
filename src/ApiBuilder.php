@@ -419,7 +419,7 @@ class ApiBuilder
     protected function processPathMappings($arguments, $api, $uri): string
     {
         foreach (array_get($api, 'mappings.path', []) as $key => $value) {
-            $uri = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, 'UNKNOWN'), $uri);
+            $uri = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, null), $uri);
         }
 
         return $uri;
@@ -462,7 +462,7 @@ class ApiBuilder
             if (stripos($value, 'nullable|') !== false) {
                 $values = explode('|', $value);
                 if (array_get($arguments[0], $values[1]) === null || array_get($arguments[0], $values[1]) === '') {
-                    $stringToArray = json_decode($json,true);
+                    $stringToArray = json_decode($json, true);
                     unset($stringToArray[$key]);
                     $json = json_encode($stringToArray);
                     continue;
@@ -479,9 +479,9 @@ class ApiBuilder
                 }
             } elseif ($this->checkBool(array_get($arguments[0], $value))) {
                 // Check boolean
-                $json = str_ireplace('"{' . $key . '}"', array_get($arguments[0], $value, 'UNKNOWN'), $json);
+                $json = str_ireplace('"{' . $key . '}"', array_get($arguments[0], $value, null), $json);
             } else {
-                $json = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, 'UNKNOWN'), $json);
+                $json = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, null), $json);
             }
         }
         return json_decode($json, true);
@@ -525,9 +525,17 @@ class ApiBuilder
                 }
             } elseif ($this->checkBool(array_get($arguments[0], $value))) {
                 // Check boolean
-                $xml = str_ireplace('"{' . $key . '}"', array_get($arguments[0], $value, 'UNKNOWN'), $xml);
+                if (!empty(array_get($arguments[0], $value))) {
+                    $xml = str_ireplace('"{' . $key . '}"', array_get($arguments[0], $value), $xml);
+                } else {
+                    $xml = str_ireplace('<' . $key . '>{' . $key . '}</' . $key . '>', '', $xml);
+                }
             } else {
-                $xml = str_ireplace('{' . $key . '}', $this->escapeSpecialCharacters(array_get($arguments[0], $value, 'UNKNOWN')), $xml);
+                if (!empty(array_get($arguments[0], $value))) {
+                    $xml = str_ireplace('{' . $key . '}', $this->escapeSpecialCharacters(array_get($arguments[0], $value)), $xml);
+                } else {
+                    $xml = str_ireplace('<' . $key . '>{' . $key . '}</' . $key . '>', '', $xml);
+                }
             }
         }
         // XML API don't allow & in value
@@ -545,18 +553,15 @@ class ApiBuilder
     private function escapeSpecialCharacters(String $string): String
     {
         if (!empty($string)) {
-            $custom_escape_method = config('api_helper.connections.'.$this->connection.'.character_escape_method');
-            if(!empty($custom_escape_method))
-            {
+            $custom_escape_method = config('api_helper.connections.' . $this->connection . '.character_escape_method');
+            if (!empty($custom_escape_method)) {
                 if (stripos($custom_escape_method, '@') !== false) {
                     $callable = explode('@', $custom_escape_method);
-                    if(is_callable($callable) === true){
+                    if (is_callable($callable) === true) {
                         $string = call_user_func($callable, $string);
                     }
                 }
-            }
-            else
-            {
+            } else {
                 $string = preg_replace('/&(\w+);/i', '', $string);
             }
         }
