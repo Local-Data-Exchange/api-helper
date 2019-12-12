@@ -1,6 +1,14 @@
 {
     "name": "lde/api-helper",
     "description": "Laravel package to help consume REST and XML APIs with little effort.",
+    "license": "MIT",
+    "keywords": [
+        "Laravel Third Party Api Call",
+        "Api Helper",
+        "third party call",
+        "consume api",
+        "laravel api"
+    ],
     "require": {
         "guzzlehttp/guzzle": "^6.3",
         "php": ">=7.0.0",
