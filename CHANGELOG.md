@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.19
+- Bump symfony/http-foundation from 4.2.6 to 4.4.1
+
 ## 0.1.18
 - Updated document and added new docker image files in config for testing different environment.
 - When value is empty or null at that time we were sending UNKNOWN which is now replaced with null in process json mappings function.
