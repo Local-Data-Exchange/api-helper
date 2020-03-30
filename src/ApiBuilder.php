@@ -233,10 +233,10 @@ class ApiBuilder
             // check for success
             if ($object->success == true) {
                 // Raise completed event
-                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime);
+                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $this->connection);
             } else {
                 // Raise failed event
-                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $object->error);
+                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $this->connection);               
             }
 
             return $object;

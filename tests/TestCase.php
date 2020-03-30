@@ -11,9 +11,30 @@ class TestCase extends Orchestra
         // Setup config file
         $app['config']->set(['api_helper' => $this->returnconfig()]);
     }
-    private function returnconfig()
+    public function returnconfig()
     {
         return [
+            /*
+            |--------------------------------------------------------------------------
+            | Prometheus
+            |--------------------------------------------------------------------------
+            | log_stats if you want to use api stats using prometheus
+            |
+            | log_stats = false (default)
+            |
+            | Set config of prometheus like app name, client etc.
+            |
+            |
+            | You can any variables to export on histogram and counter of prometheus
+             */
+            'log_stats' => false,
+
+            'prometheus' => [
+                'owner' => 'api-helper',
+                'client_id' => 10,
+                'app' => 30,
+                'node' => '',
+            ],
 
             /*
             |--------------------------------------------------------------------------
@@ -69,6 +90,10 @@ class TestCase extends Orchestra
                     'root' => '',
                     // API type: json or xml or view
                     'type' => 'json',
+
+                    //Set prometheus counter name and desciption
+                    'counter_name' => 'httpbin',
+                    'counter_description' => 'This is testing json api call',
 
                     // API base URL
                     'base_url' => 'https://httpbin.org',
@@ -147,6 +172,10 @@ class TestCase extends Orchestra
                     'root' => 'request',
                     // API type: json or xml or view
                     'type' => 'xml',
+
+                    //Set prometheus counter name and desciption
+                    'counter_name' => 'mockbin',
+                    'counter_description' => 'This is testing xml api call',
 
                     // API base URL
                     'base_url' => 'http://mockbin.org',

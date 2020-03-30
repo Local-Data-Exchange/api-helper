@@ -1,6 +1,27 @@
 <?php
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Prometheus
+    |--------------------------------------------------------------------------
+    | log_stats if you want to use api stats using prometheus
+    |
+    | log_stats = false (default)
+    |
+    | Set config of prometheus like app name, client etc.
+    |   
+    |
+    | You can any variables to export on histogram and counter of prometheus
+     */
+    'log_stats' => true,
+
+    'prometheus' => [
+        'owner' => 'api-helper',
+        'client_id' => 10,
+        'app' => 30,
+        'node' => ''
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -54,6 +75,10 @@ return [
         // HTTPBin
         'httpbin' => [
             'root' => '',
+            
+            //Set prometheus counter name and desciption
+            'counter_name' => 'httpbin',
+            'counter_description' => 'This is testing JSON api call',
 
             //Set method name for custom escape characters
             'character_escape_method' => '',
@@ -136,6 +161,10 @@ return [
 
         'mockbin' => [
             'root' => 'request',
+
+            //Set prometheus counter name and desciption
+            'counter_name' => 'mockbin',
+            'counter_description' => 'This is testing xml api call',
 
             //Set method name for custom escape characters
             'character_escape_method' => '',
