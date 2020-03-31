@@ -234,15 +234,14 @@ class ApiBuilder
             // check for success
             if ($object->success == true) {
                 // Raise completed event
-                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $this->connection);
+                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime);
             } else {
                 // Raise failed event
-                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $this->connection);               
+                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $object->error);               
             }
 
             //Log to prom if it is enabled
             if(config('api_helper.log_stats')) {
-                StatsHelper::incCounter($config['counter_name'], 1, $config['counter_description']);
                 StatsHelper::incHistogram('external_apis_response_time_seconds', (float) (microtime(true) - $startTime), [$this->connection, $name, $method, $object->success], "Response time for external API calls.", ['provider', 'method', 'request_type', 'status']);
             }
 
