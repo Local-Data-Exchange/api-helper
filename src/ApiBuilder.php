@@ -242,7 +242,7 @@ class ApiBuilder
 
             //Log to prom if it is enabled
             if(config('api_helper.log_stats')) {
-                StatsHelper::incHistogram('external_apis_response_time_seconds', (float) (microtime(true) - $startTime), [$this->connection, $name, $method, $object->success], "Response time for external API calls.", ['provider', 'method', 'request_type', 'status']);
+                StatsHelper::incHistogram('external_apis_response_time_seconds', (float) (microtime(true) - $startTime), [$this->connection, $name, $object->meta->status_code], "Response time for external API calls.", ['destination', 'endpoint', 'status']);
             }
 
             return $object;

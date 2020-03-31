@@ -27,14 +27,13 @@ class TestCase extends Orchestra
             |
             | You can any variables to export on histogram and counter of prometheus
              */
-            'log_stats' => false,
+            'log_stats' => true,
 
             'prometheus' => [
                 'labels' => [
-                    'owner' => 'api-helper',
                     'client_id' => 10,
-                    'app' => 30,
-                    'node' => '',
+                    'app' => 'api-helper',
+                    'source' => 'core',
                 ],
                 'histogram_bucket' => [0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 7.5, 10.0],
             ],
