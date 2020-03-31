@@ -94,10 +94,6 @@ class TestCase extends Orchestra
                     // API type: json or xml or view
                     'type' => 'json',
 
-                    //Set prometheus counter name and desciption
-                    'counter_name' => 'httpbin',
-                    'counter_description' => 'This is testing json api call',
-
                     // API base URL
                     'base_url' => 'https://httpbin.org',
 
@@ -175,10 +171,6 @@ class TestCase extends Orchestra
                     'root' => 'request',
                     // API type: json or xml or view
                     'type' => 'xml',
-
-                    //Set prometheus counter name and desciption
-                    'counter_name' => 'mockbin',
-                    'counter_description' => 'This is testing xml api call',
 
                     // API base URL
                     'base_url' => 'http://mockbin.org',

@@ -79,10 +79,6 @@ return [
         'httpbin' => [
             'root' => '',
 
-            //Set prometheus counter name and desciption
-            'counter_name' => 'httpbin',
-            'counter_description' => 'This is testing JSON api call',
-
             //Set method name for custom escape characters
             'character_escape_method' => '',
 
@@ -167,10 +163,6 @@ return [
 
         'mockbin' => [
             'root' => 'request',
-
-            //Set prometheus counter name and desciption
-            'counter_name' => 'mockbin',
-            'counter_description' => 'This is testing xml api call',
 
             //Set method name for custom escape characters
             'character_escape_method' => '',
