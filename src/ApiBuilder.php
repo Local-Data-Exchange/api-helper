@@ -10,6 +10,7 @@ use Lde\ApiHelper\Events\ApiCallCompleted;
 use Lde\ApiHelper\Events\ApiCallStarting;
 use Lde\ApiHelper\Helpers\HelperException;
 use Lde\ApiHelper\Helpers\ObfuscationHelper;
+use Lde\ApiHelper\Helpers\StatsHelper;
 use Spatie\ArrayToXml\ArrayToXml;
 
 class ApiBuilder
@@ -237,6 +238,12 @@ class ApiBuilder
             } else {
                 // Raise failed event
                 ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $this->connection);               
+            }
+
+            //Log to prom if it is enabled
+            if(config('api_helper.log_stats')) {
+                StatsHelper::incCounter($config['counter_name'], 1, $config['counter_description']);
+                StatsHelper::incHistogram('external_apis_response_time_seconds', (float) (microtime(true) - $startTime), [$this->connection, $name, $method, $object->success], "Response time for external API calls.", ['provider', 'method', 'request_type', 'status']);
             }
 
             return $object;

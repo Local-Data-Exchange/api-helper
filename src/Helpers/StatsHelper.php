@@ -80,6 +80,13 @@ class StatsHelper
                 $labels[] = app()->environment();
             }
 
+            //Overridding prometheus config from api_helper
+            $prometheusConfig = config('api_helper.prometheus');
+            foreach($prometheusConfig as $key => $row) {
+                $labelNames[] = $key;
+                $labels[] = $row;
+            }
+
             if (count($labels) != count($labelNames)) {
                 throw new ArraySizeMisMatchException("{$histogram_name} has mismatch labels and names");
             }

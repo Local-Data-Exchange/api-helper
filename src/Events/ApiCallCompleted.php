@@ -16,20 +16,18 @@ class ApiCallCompleted
     public $response;
     public $apiConfig;
     public $duration;
-    public $connection;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($name, $response, $config, $duration, $connection)
+    public function __construct($name, $response, $config, $duration)
     {
         $this->name = $name;
         $this->response = $response;
         $this->apiConfig = $config;
         $this->duration = $duration;
-        $this->connection = $connection;
     }
 
     /**
