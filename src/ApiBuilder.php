@@ -352,7 +352,9 @@ class ApiBuilder
                 $object->meta->tries = $tries;
 
                 // Check if we should retry
-                $statusesNotToRetry = [400, 401, 404, 406, 422];
+                $configStatus = array_get($config,'status_not_to_retry',[]);
+                $defaultStatus = [400, 401, 404, 406, 422];
+                $statusesNotToRetry = array_merge($configStatus, $defaultStatus);
 
                 if (in_array($httpStatusCode, $statusesNotToRetry)) {
                     Log::debug('ApiBuilder->call() - Call failed but status is in blacklist. Not retrying.', [

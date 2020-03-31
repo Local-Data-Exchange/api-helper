@@ -78,6 +78,9 @@ return [
             // number of retries to override global settings.
             'number_of_retries' => 0, // 0 = off
 
+            //status not to retry, define status code for which api will not retried
+            'status_not_to_retry' => [517],
+
             // List of API routes we are integrating with
             'routes' => [
 
