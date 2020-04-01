@@ -11,7 +11,7 @@ class TestCase extends Orchestra
         // Setup config file
         $app['config']->set(['api_helper' => $this->returnconfig()]);
     }
-    public function returnconfig()
+    private function returnconfig()
     {
         return [
             /*
