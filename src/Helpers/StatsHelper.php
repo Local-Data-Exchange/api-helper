@@ -4,7 +4,7 @@ namespace Lde\ApiHelper\Helpers;
 
 use Prometheus\Exception\MetricNotFoundException;
 use Prometheus\Exception\MetricsRegistrationException;
-use App\Exceptions\ArraySizeMisMatchException;
+use Lde\ApiHelper\Exceptions\ArraySizeMisMatchException;
 use Illuminate\Support\Facades\Log;
 
 
