@@ -17,7 +17,7 @@ return [
     'log_stats' => true,
 
     'prometheus' => [
-        'labels' => [           
+        'labels' => [
             'client_id' => 10,
             'app' => 'api-helper',
             'source' => 'core',

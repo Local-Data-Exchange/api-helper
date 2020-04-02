@@ -237,11 +237,11 @@ class ApiBuilder
                 ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime);
             } else {
                 // Raise failed event
-                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $object->error);               
+                ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $object->error);
             }
 
-            //Log to prom if it is enabled
-            if(config('api_helper.log_stats')) {
+            // Log to prom if it is enabled
+            if (config('api_helper.log_stats')) {
                 StatsHelper::incHistogram('external_apis_response_time_seconds', (float) (microtime(true) - $startTime), [$this->connection, $name, $object->meta->status_code], "Response time for external API calls.", ['destination', 'endpoint', 'status']);
             }
 
@@ -358,7 +358,7 @@ class ApiBuilder
                 $object->meta->tries = $tries;
 
                 // Check if we should retry
-                $configStatus = array_get($config,'status_not_to_retry',[]);
+                $configStatus = array_get($config, 'status_not_to_retry', []);
                 $defaultStatus = [400, 401, 404, 406, 422];
                 $statusesNotToRetry = array_merge($configStatus, $defaultStatus);
 
