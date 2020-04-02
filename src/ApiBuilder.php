@@ -242,7 +242,11 @@ class ApiBuilder
 
             // Log to prom if it is enabled
             if (config('api_helper.log_stats')) {
-                StatsHelper::incHistogram('lde_http_response_time_seconds_bucket', (float) (microtime(true) - $startTime), [$this->connection, $name, $object->meta->status_code], "Response time for external API calls.", ['destination', 'endpoint', 'status']);
+                $bucketName = config('api_helper.prometheus.histogram_bucket_name');
+                if (empty($bucketName)) {
+                    $bucketName = 'external_apis_response_time_seconds';
+                }
+                StatsHelper::incHistogram($bucketName, (float) (microtime(true) - $startTime), [$this->connection, $name, $object->meta->status_code], "Response time for external API calls.", ['destination', 'endpoint', 'status']);
             }
 
             return $object;
