@@ -10,6 +10,7 @@ use Lde\ApiHelper\Events\ApiCallCompleted;
 use Lde\ApiHelper\Events\ApiCallStarting;
 use Lde\ApiHelper\Helpers\HelperException;
 use Lde\ApiHelper\Helpers\ObfuscationHelper;
+use Lde\ApiHelper\Helpers\StatsHelper;
 use Spatie\ArrayToXml\ArrayToXml;
 
 class ApiBuilder
@@ -239,6 +240,15 @@ class ApiBuilder
                 ApiCallCompleted::dispatch($this->name, $object, $api, microtime(true) - $startTime, $object->error);
             }
 
+            // Log to prom if it is enabled
+            if (config('api_helper.log_stats')) {
+                $bucketName = config('api_helper.prometheus.histogram_bucket_name');
+                if (empty($bucketName)) {
+                    $bucketName = 'external_apis_response_time_seconds';
+                }
+                StatsHelper::incHistogram($bucketName, (float) (microtime(true) - $startTime), [$this->connection, $name, $object->meta->status_code], "Response time for external API calls.", ['destination', 'endpoint', 'status']);
+            }
+
             return $object;
 
         } else {
@@ -352,7 +362,7 @@ class ApiBuilder
                 $object->meta->tries = $tries;
 
                 // Check if we should retry
-                $configStatus = array_get($config,'status_not_to_retry',[]);
+                $configStatus = array_get($config, 'status_not_to_retry', []);
                 $defaultStatus = [400, 401, 404, 406, 422];
                 $statusesNotToRetry = array_merge($configStatus, $defaultStatus);
 

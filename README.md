@@ -62,6 +62,27 @@ This package is useful to consume API's, here is the instruction for installatio
 
 - This will publish config file naming **api_helper.php** into config folder.
 
+## Prometheus Configuration
+- Prometheus is dependent on your app so you need to provide prometheus configuration and also use below packages on your app.
+
+  - [jimdo/prometheus_client_php](https://github.com/Jimdo/prometheus_client_php)
+  - [superbalist/laravel-prometheus-exporter](https://github.com/Superbalist/laravel-prometheus-exporter)
+- If you want to use prometheus then you should turn it on from config [api_helper](src/Config/api_helper.php)
+```php
+'log_stats' => true, // If you want to use prometheus then set as true otherwise false
+
+    'prometheus' => [
+        'labels' => [           
+            'client_id' => 10,
+            'app' => 'api-helper',
+            'source' => 'core',
+        ],
+        'histogram_bucket' => [0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 7.5, 10.0],
+    ],
+```
+- You can configure labels of prometheus inside `prometheus.labels` as per your need.
+- `histogram_bucket` you can set inside prometheus config as array.
+
 ## Usage
 
 - To use this package you need to add following class where you want to use this package.

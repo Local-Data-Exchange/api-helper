@@ -14,6 +14,30 @@ class TestCase extends Orchestra
     private function returnconfig()
     {
         return [
+            /*
+            |--------------------------------------------------------------------------
+            | Prometheus
+            |--------------------------------------------------------------------------
+            | log_stats if you want to use api stats using prometheus
+            |
+            | log_stats = false (default)
+            |
+            | Set config of prometheus like app name, client etc.
+            |
+            |
+            | You can any variables to export on histogram and counter of prometheus
+             */
+            'log_stats' => true,
+
+            'prometheus' => [
+                'labels' => [
+                    'client_id' => 10,
+                    'app' => 'api-helper',
+                    'source' => 'core',
+                ],
+                'histogram_bucket_name' => 'lde_http_response_time_seconds_bucket',
+                'histogram_bucket' => [0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 7.5, 10.0],
+            ],
 
             /*
             |--------------------------------------------------------------------------

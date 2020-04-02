@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.1.21
+- Add support for metrics, which will use app prometheus to export metrics.
+
+## 0.1.20
+- Add option to add status code to not retry, this option you can set inside your api config.
+
 ## 0.1.19
 - Bump symfony/http-foundation from 4.2.6 to 4.4.1
 - Remove space from `&amp;` inside processXmlMappings fucntion.
