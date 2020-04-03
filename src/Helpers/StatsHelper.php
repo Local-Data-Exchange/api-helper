@@ -29,7 +29,17 @@ class StatsHelper
             if (!empty($prometheusConfigLables) && is_array($prometheusConfigLables) === true) {
                 foreach ($prometheusConfigLables as $key => $row) {
                     $labelNames[] = $key;
-                    $labels[] = $row;
+                    if (stripos($row, '@') !== false) {
+                        // we have an @ - callable
+                        $callable = explode('@', $row);
+                        if (is_callable($callable)) {
+                            $labels[] = call_user_func($callable);
+                        } else {
+                            $labels[] = $row;
+                        }
+                    } else {
+                        $labels[] = $row;
+                    }
                 }
             }
 
