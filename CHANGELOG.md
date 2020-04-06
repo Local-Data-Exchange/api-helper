@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 0.1.22
+- This version include support of call back function for prometheus config.
+
 ## 0.1.21
 - Add support for metrics, which will use app prometheus to export metrics.
 
