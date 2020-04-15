@@ -83,4 +83,20 @@ class ApiBuilderTest extends TestCase
         self::assertEquals('http://mockbin.org/echo', $response->meta->uri);
     }
 
+    
+    public function testHttpBinPostFormParams()
+    {
+        $apibuilder = new ApiBuilder();
+        $api = $apibuilder->api('httpbin');
+        $api = $api->addHeaders(['Content-Type' => 'application/x-www-form-urlencoded']);
+
+        $response = $api->formParams(['person' => ['name' => 'John','lastname' => 'Smith']]);
+        self::assertTrue($response->success);
+        self::assertEquals('https://httpbin.org/post', $response->meta->uri);
+        self::assertEquals($api->requestOptions['headers']['Content-Type'],'application/x-www-form-urlencoded');
+        self::assertEquals('John',$response->meta->params['form_params']['parameters']['name']);
+        self::assertEquals('Smith',$response->meta->params['form_params']['parameters']['surname']);
+    }
+
+
 }

@@ -152,6 +152,30 @@ class TestCase extends Orchestra
                                 ],
                             ],
                         ],
+                            // Sample API to test Form_params
+
+                        'formParams' => [
+                            'name' => 'httpbin',
+                            'method' => 'POST',
+                            'uri' => '/post',
+                            'request_type' => 'form_data',
+                            'form_params' => [
+                                'headers' => [
+                                    "Accept" => "application/json",
+                                    "Content-Type" => "application/x-www-form-urlencoded",
+                                ],
+                                'parameters' => [
+                                    'name' => '{name}',
+                                    'lastname' => '{lastname}'
+                                ],
+                            ],
+                            'mappings' => [
+                                'form_params' => [
+                                    'name' => 'person.name',
+                                    'lastname' => 'person.lastname'
+                                ],
+                            ],
+                        ],
 
                         'delete' => [
                             'name' => 'httpbin',
