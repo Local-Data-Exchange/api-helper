@@ -140,7 +140,6 @@ class ApiBuilder
                         case 'PUT':
                             // JSON or Form_params mappings
                             
-                            // dd($json);
                             if($requestType == 'form_data'){
 
                                 $json = $this->processFormParamsMappings($arguments, $api);
