@@ -116,7 +116,7 @@ class ApiBuilder
 
             // Method
             $method = strtoupper(array_get($api, 'method', 'GET'));
-            $request_type = array_get($api, 'request_type');
+            $requestType = array_get($api, 'request_type');
 
             // Uri
             if (!$uri = $this->baseUrl . array_get($api, 'uri')) {
@@ -141,7 +141,7 @@ class ApiBuilder
                             // JSON or Form_params mappings
                             
                             // dd($json);
-                            if($request_type == 'form_data'){
+                            if($requestType == 'form_data'){
 
                                 $json = $this->processFormParamsMappings($arguments, $api);
 
