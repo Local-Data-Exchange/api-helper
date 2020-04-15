@@ -106,7 +106,6 @@ class ApiBuilder
         $config = config('api_helper.connections.' . $this->connection);
 
         $api = array_get($config['routes'], $name);
-
         $this->name = $this->connection . "\\" . $name;
         $object = new ApiResponse();
         if ($api) {
@@ -116,7 +115,8 @@ class ApiBuilder
 
             // Method
             $method = strtoupper(array_get($api, 'method', 'GET'));
-
+            $request_type = array_get($api, 'request_type');
+            
             // Uri
             if (!$uri = $this->baseUrl . array_get($api, 'uri')) {
                 throw new HelperException("Uri is not configured for {$name} API!");
@@ -137,11 +137,20 @@ class ApiBuilder
                         case 'PATCH':
                         case 'POST':
                         case 'PUT':
-                            // JSON mappings
-                            $json = $this->processJsonMappings($arguments, $api);
+                            // JSON or Form_params mappings
+                            
+                            if($request_type == 'form_data'){
 
-                            // Call the API
-                            $object = $this->call($method, $uri, ['json' => $json]);
+                                $json = $this->processFormParamsMappings($arguments, $api);
+                                
+                                $object = $this->call($method,$uri,['form_params' => $json]);
+                            }
+                            else {
+
+                                $json = $this->processJsonMappings($arguments, $api);
+                                // Call the API
+                                $object = $this->call($method, $uri, ['json' => $json]);
+                            }
 
                             break;
                         default:
@@ -150,7 +159,7 @@ class ApiBuilder
                             // Call the API
                             $object = $this->call($method, $uri);
                     }
-
+               
                     // check for success
                     if ($object->success == true) {
                         // Decode JSON body
@@ -176,7 +185,9 @@ class ApiBuilder
 
                     }
 
-                    break;
+                        break;
+
+                
                 case 'xml':
 
                     switch ($method) {
@@ -299,7 +310,7 @@ class ApiBuilder
                     // convert xml string into an object
                     $data = (array) simplexml_load_string($response->getBody()->getContents());
 
-                } else {
+                } else if($this->type== 'form_params') {
 
                     // Send request
                     $response = $client->request($method, $uri, $params);
@@ -497,6 +508,45 @@ class ApiBuilder
             }
         }
         return json_decode($json, true);
+    }
+
+    /**
+     * @param $arguments
+     * @param $api
+     *
+     * @return array
+     */
+    protected function processFormParamsMappings($arguments, $api): array
+    {
+        $json = json_encode(array_get($api, 'form_params', []));
+
+        foreach (array_get($api, 'mappings.form_params', []) as $key => $value) {
+            //Remove array key which is nullable, Need to specify "nullable" in api_helper.php config file.
+            if (stripos($value, 'nullable|') !== false) {
+                $values = explode('|', $value);
+                if (array_get($arguments[0], $values[1]) === null || array_get($arguments[0], $values[1]) === '') {
+                    $stringToArray = json_decode($json, true);
+                    unset($stringToArray[$key]);
+                    $json = json_encode($stringToArray);
+                    continue;
+                } else {
+                    $value = $values[1];
+                }
+            }
+            if (stripos($value, '@') !== false) {
+                // we have an @ - callable
+                $callable = explode('@', $value);
+                if (is_callable($callable)) {
+                    $json = str_ireplace('"{' . $key . '}"', (call_user_func($callable, $arguments[0])), $json);
+                }
+            } elseif ($this->checkBool(array_get($arguments[0], $value))) {
+                // Check boolean
+                $json = str_ireplace('"{' . $key . '}"', array_get($arguments[0], $value, null), $json);
+            } else {
+                $json = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, null), $json);
+            }
+        }
+        return json_decode($json,true);
     }
 
     /**
