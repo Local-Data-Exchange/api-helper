@@ -106,6 +106,7 @@ class ApiBuilder
         $config = config('api_helper.connections.' . $this->connection);
 
         $api = array_get($config['routes'], $name);
+
         $this->name = $this->connection . "\\" . $name;
         $object = new ApiResponse();
         if ($api) {
@@ -116,7 +117,7 @@ class ApiBuilder
             // Method
             $method = strtoupper(array_get($api, 'method', 'GET'));
             $request_type = array_get($api, 'request_type');
-            
+
             // Uri
             if (!$uri = $this->baseUrl . array_get($api, 'uri')) {
                 throw new HelperException("Uri is not configured for {$name} API!");
@@ -139,17 +140,18 @@ class ApiBuilder
                         case 'PUT':
                             // JSON or Form_params mappings
                             
+                            // dd($json);
                             if($request_type == 'form_data'){
 
                                 $json = $this->processFormParamsMappings($arguments, $api);
-                                
+
                                 $object = $this->call($method,$uri,['form_params' => $json]);
                             }
                             else {
 
-                                $json = $this->processJsonMappings($arguments, $api);
-                                // Call the API
-                                $object = $this->call($method, $uri, ['json' => $json]);
+                            $json = $this->processJsonMappings($arguments, $api);
+                            // Call the API
+                            $object = $this->call($method, $uri, ['json' => $json]);
                             }
 
                             break;
@@ -186,8 +188,6 @@ class ApiBuilder
                     }
 
                         break;
-
-                
                 case 'xml':
 
                     switch ($method) {
@@ -310,7 +310,7 @@ class ApiBuilder
                     // convert xml string into an object
                     $data = (array) simplexml_load_string($response->getBody()->getContents());
 
-                } else if($this->type== 'form_params') {
+                } else {
 
                     // Send request
                     $response = $client->request($method, $uri, $params);
