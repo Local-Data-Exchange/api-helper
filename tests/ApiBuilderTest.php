@@ -95,7 +95,7 @@ class ApiBuilderTest extends TestCase
         self::assertEquals('https://httpbin.org/post', $response->meta->uri);
         self::assertEquals($api->requestOptions['headers']['Content-Type'],'application/x-www-form-urlencoded');
         self::assertEquals('John',$response->meta->params['form_params']['parameters']['name']);
-        self::assertEquals('Smith',$response->meta->params['form_params']['parameters']['surname']);
+        self::assertEquals('Smith',$response->meta->params['form_params']['parameters']['lastname']);
     }
 
 
