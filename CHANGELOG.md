@@ -1,6 +1,8 @@
 # CHANGELOG
 ## 0.1.23 
 - Added form_params support.
+- Update circle ci config to test with laravel 6.
+- Update circle ci to run testcases smoothly and fast.
 
 ## 0.1.22
 - This version include support of call back function for prometheus config.
