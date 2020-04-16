@@ -159,14 +159,12 @@ return [
                             "Content-Type" => "application/x-www-form-urlencoded",
                         ],
                         'parameters' => [
-                            'name' => '{name}',
-                            'lastname' => '{lastname}'
+                            'revision' => '{revision}',
                         ],
                     ],
                     'mappings' => [
                         'form_params' => [
-                            'name' => 'person.name',
-                            'lastname' => 'person.lastname'
+                            'revision' => 'param.revision',
                         ],
                     ],
                 ],
