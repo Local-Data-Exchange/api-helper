@@ -82,5 +82,16 @@ class ApiBuilderTest extends TestCase
         self::assertEquals('Barbarian', $val->attributes->class[0]);
         self::assertEquals('http://mockbin.org/echo', $response->meta->uri);
     }
-
+    public function testHttpBinPostFormParams()
+    {
+        $apibuilder = new ApiBuilder();
+        $api = $apibuilder->api('httpbin');
+        $api = $api->addHeaders(['Content-Type' => 'application/x-www-form-urlencoded']);
+        $response = $api->formParams(['param' => ['revision' => 'one']]);
+        self::assertTrue($response->success);
+        self::assertArrayHasKey('form',$response->body);
+        self::assertEquals('https://httpbin.org/post', $response->meta->uri);
+        self::assertEquals($api->requestOptions['headers']['Content-Type'],'application/x-www-form-urlencoded');
+        self::assertEquals('one',$response->meta->params['form_params']['parameters']['revision']);
+    }
 }
