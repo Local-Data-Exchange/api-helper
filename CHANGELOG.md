@@ -1,4 +1,6 @@
 # CHANGELOG
+## 0.1.23 
+- Added form_params support.
 
 ## 0.1.22
 - This version include support of call back function for prometheus config.
