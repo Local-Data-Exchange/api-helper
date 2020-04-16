@@ -12,8 +12,7 @@ commands:
         steps:
             - checkout
             - run: echo 'export APP_ENV="test"' >> $BASH_ENV
-            - run: composer require "laravel/framework=5.8.*" --prefer-source --no-interaction --no-suggest
-            - run: composer update << parameters.composer_flags >> --no-interaction --prefer-source
+            - run: composer install
             - run: ./vendor/bin/phpunit
 
 workflows:
@@ -24,6 +23,7 @@ workflows:
             - php72-laravel58-prefer-lowest
             - php73-laravel58
             - php73-laravel58-prefer-lowest
+            - php72-laravel60
 
 jobs:
     php72-laravel58-prefer-lowest:
@@ -52,3 +52,9 @@ jobs:
         steps:
             - install_and_test:
                   laravel: 5.8.*
+    php72-laravel60:
+        docker:
+            - image: circleci/php:7.2
+        steps:
+            - install_and_test:
+                  laravel: 6.0.*
