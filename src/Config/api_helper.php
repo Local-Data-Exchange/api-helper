@@ -154,10 +154,6 @@ return [
                     'uri' => '/post',
                     'request_type' => 'form_data',
                     'form_params' => [
-                        'headers' => [
-                            "Accept" => "application/json",
-                            "Content-Type" => "application/x-www-form-urlencoded",
-                        ],
                         'parameters' => [
                             'revision' => '{revision}',
                         ],
