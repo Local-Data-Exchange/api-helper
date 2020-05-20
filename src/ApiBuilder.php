@@ -139,18 +139,17 @@ class ApiBuilder
                         case 'POST':
                         case 'PUT':
                             // JSON or Form_params mappings
-                            
-                            if($requestType == 'form_data'){
+
+                            if ($requestType == 'form_data') {
 
                                 $json = $this->processFormParamsMappings($arguments, $api);
 
-                                $object = $this->call($method,$uri,['form_params' => $json]);
-                            }
-                            else {
+                                $object = $this->call($method, $uri, ['form_params' => $json]);
+                            } else {
 
-                            $json = $this->processJsonMappings($arguments, $api);
-                            // Call the API
-                            $object = $this->call($method, $uri, ['json' => $json]);
+                                $json = $this->processJsonMappings($arguments, $api);
+                                // Call the API
+                                $object = $this->call($method, $uri, ['json' => $json]);
                             }
 
                             break;
@@ -160,7 +159,7 @@ class ApiBuilder
                             // Call the API
                             $object = $this->call($method, $uri);
                     }
-               
+
                     // check for success
                     if ($object->success == true) {
                         // Decode JSON body
@@ -186,7 +185,7 @@ class ApiBuilder
 
                     }
 
-                        break;
+                    break;
                 case 'xml':
 
                     switch ($method) {
@@ -506,7 +505,15 @@ class ApiBuilder
                 $json = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, null), $json);
             }
         }
-        return json_decode($json, true);
+        $mapping = json_decode($json, true);
+        if ($mapping == null) {
+            Log::error("ApiBuilder->processJsonMappings() - Error while decoding string", [
+                'json' => $json,
+                'arguments' => $arguments,
+                'api' => $api,
+            ]);
+        }
+        return $mapping;
     }
 
     /**
@@ -545,7 +552,7 @@ class ApiBuilder
                 $json = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, null), $json);
             }
         }
-        return json_decode($json,true);
+        return json_decode($json, true);
     }
 
     /**

@@ -1,4 +1,7 @@
 # CHANGELOG
+## 0.1.24
+- Adding logs in json mapping, so we can figure out if something is wrong with data.
+
 ## 0.1.23 
 - Added form_params support.
 - Update circle ci config to test with laravel 6.
