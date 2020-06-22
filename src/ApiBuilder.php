@@ -457,7 +457,7 @@ class ApiBuilder
     {
         $query = [];
         foreach (array_get($api, 'mappings.query', []) as $key => $value) {
-            if (array_get($arguments[0], $value)) {
+            if (array_get($arguments[0], $value) !== null) {
                 $query[$key] = array_get($arguments[0], $value, '');
             }
         }
