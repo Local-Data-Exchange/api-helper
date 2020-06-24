@@ -596,7 +596,7 @@ class ApiBuilder
             } elseif ($this->checkBool(array_get($arguments[0], $value))) {
                 // Check boolean
                 if (!empty(array_get($arguments[0], $value))) {
-                    $xml = str_ireplace('"{' . $key . '}"', array_get($arguments[0], $value), $xml);
+                    $xml = str_ireplace('{' . $key . '}', array_get($arguments[0], $value), $xml);
                 } else {
                     $xml = str_ireplace('<' . $key . '>{' . $key . '}</' . $key . '>', '', $xml);
                 }
