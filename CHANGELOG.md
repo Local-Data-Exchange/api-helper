@@ -1,4 +1,16 @@
 # CHANGELOG
+## 0.1.28
+- Perform json mapping if body is given.
+
+## 0.1.27
+- Bug fix of xml boolean assign.
+
+## 0.1.26
+- Adding support of boolean in query param.
+
+## 0.1.25
+- Add support of optional query param.
+
 ## 0.1.24
 - Adding logs in json mapping, so we can figure out if something is wrong with data.
 
