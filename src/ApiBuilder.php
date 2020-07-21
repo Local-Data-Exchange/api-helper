@@ -479,7 +479,7 @@ class ApiBuilder
     protected function processJsonMappings($arguments, $api): array
     {
         $json = json_encode(array_get($api, 'body', []));
-        if (empty($json)) {
+        if ($json === '[]') {
             return [];
         }
         foreach (array_get($api, 'mappings.body', []) as $key => $value) {
