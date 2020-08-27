@@ -517,6 +517,7 @@ class ApiBuilder
                 'arguments' => $arguments,
                 'api' => $api,
             ]);
+            return [];
         }
         return $mapping;
     }
