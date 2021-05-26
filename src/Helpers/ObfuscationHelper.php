@@ -15,7 +15,7 @@ class ObfuscationHelper
     public static function obfuscateEmail($email)
     {
         $em = explode("@", $email);
-        $name = implode(array_slice($em, 0, (count($em) - 1)), "@");
+        $name = implode('@', array_slice($em, 0, (count($em) - 1)));
         $len = (strlen($name) - 1);
         return substr($name, 0, 1) . str_repeat('*', $len) . "@" . end($em);
     }

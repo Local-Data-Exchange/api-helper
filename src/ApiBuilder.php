@@ -12,6 +12,7 @@ use Lde\ApiHelper\Helpers\HelperException;
 use Lde\ApiHelper\Helpers\ObfuscationHelper;
 use Lde\ApiHelper\Helpers\StatsHelper;
 use Spatie\ArrayToXml\ArrayToXml;
+use Illuminate\Support\Arr;
 
 class ApiBuilder
 {
@@ -52,11 +53,11 @@ class ApiBuilder
         }
 
         // Set the request options if provided for this conenction. Else use default ones.
-        if (array_get($conn, 'default_request_options')) {
+        if (Arr::get($conn, 'default_request_options')) {
             $additionalHeaders = $this->requestOptions['headers'];
-            $default = array_get($conn, 'default_request_options.headers');
+            $default = Arr::get($conn, 'default_request_options.headers');
             $headers = array_merge($additionalHeaders, $default);
-            $this->requestOptions = array_get($conn, 'default_request_options');
+            $this->requestOptions = Arr::get($conn, 'default_request_options');
             $this->requestOptions['headers'] = $headers;
         }
 
@@ -105,7 +106,7 @@ class ApiBuilder
 
         $config = config('api_helper.connections.' . $this->connection);
 
-        $api = array_get($config['routes'], $name);
+        $api = Arr::get($config['routes'], $name);
 
         $this->name = $this->connection . "\\" . $name;
         $object = new ApiResponse();
@@ -115,11 +116,11 @@ class ApiBuilder
             ApiCallStarting::dispatch($this->name, $api);
 
             // Method
-            $method = strtoupper(array_get($api, 'method', 'GET'));
-            $requestType = array_get($api, 'request_type');
+            $method = strtoupper(Arr::get($api, 'method', 'GET'));
+            $requestType = Arr::get($api, 'request_type');
 
             // Uri
-            if (!$uri = $this->baseUrl . array_get($api, 'uri')) {
+            if (!$uri = $this->baseUrl . Arr::get($api, 'uri')) {
                 throw new HelperException("Uri is not configured for {$name} API!");
             }
 
@@ -283,7 +284,7 @@ class ApiBuilder
         $success = false;
 
         // Check retries and fall back to global retries or fall back to 3
-        $retries = array_get($config, 'number_of_retries', config('api_helper.retries', 3));
+        $retries = Arr::get($config, 'number_of_retries', config('api_helper.retries', 3));
         $object = new ApiResponse();
         $xml_data = '';
         while ($success == false && $tries <= $retries) {
@@ -371,7 +372,7 @@ class ApiBuilder
                 $object->meta->tries = $tries;
 
                 // Check if we should retry
-                $configStatus = array_get($config, 'status_not_to_retry', []);
+                $configStatus = Arr::get($config, 'status_not_to_retry', []);
                 $defaultStatus = [400, 401, 404, 406, 422];
                 $statusesNotToRetry = array_merge($configStatus, $defaultStatus);
 
@@ -439,14 +440,15 @@ class ApiBuilder
      */
     protected function processPathMappings($arguments, $api, $uri): string
     {
-        foreach (array_get($api, 'mappings.path', []) as $key => $value) {
-            $uri = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, null), $uri);
+        foreach (Arr::get($api, 'mappings.path', []) as $key => $value) {
+            $uri = str_ireplace('{' . $key . '}', Arr::get($arguments[0], $value, null), $uri);
         }
 
         return $uri;
     }
 
     /**
+    
      * @param $arguments
      * @param $api
      * @param $uri
@@ -456,9 +458,9 @@ class ApiBuilder
     protected function processQueryMappings($arguments, $api, $uri): string
     {
         $query = [];
-        foreach (array_get($api, 'mappings.query', []) as $key => $value) {
-            if (array_get($arguments[0], $value) !== null) {
-                $query[$key] = array_get($arguments[0], $value, '');
+        foreach (Arr::get($api, 'mappings.query', []) as $key => $value) {
+            if (Arr::get($arguments[0], $value) !== null) {
+                $query[$key] = Arr::get($arguments[0], $value, '');
             }
         }
 
@@ -478,16 +480,16 @@ class ApiBuilder
      */
     protected function processJsonMappings($arguments, $api): array
     {
-        $json = json_encode(array_get($api, 'body', []));
+        $json = json_encode(Arr::get($api, 'body', []));
         if ($json === '[]') {
             return [];
         }
-        foreach (array_get($api, 'mappings.body', []) as $key => $value) {
+        foreach (Arr::get($api, 'mappings.body', []) as $key => $value) {
 
             //Remove array key which is nullable, Need to specify "nullable" in api_helper.php config file.
             if (stripos($value, 'nullable|') !== false) {
                 $values = explode('|', $value);
-                if (array_get($arguments[0], $values[1]) === null || array_get($arguments[0], $values[1]) === '') {
+                if (Arr::get($arguments[0], $values[1]) === null || Arr::get($arguments[0], $values[1]) === '') {
                     $stringToArray = json_decode($json, true);
                     unset($stringToArray[$key]);
                     $json = json_encode($stringToArray);
@@ -503,11 +505,11 @@ class ApiBuilder
                 if (is_callable($callable)) {
                     $json = str_ireplace('"{' . $key . '}"', (call_user_func($callable, $arguments[0])), $json);
                 }
-            } elseif ($this->checkBool(array_get($arguments[0], $value))) {
+            } elseif ($this->checkBool(Arr::get($arguments[0], $value))) {
                 // Check boolean
-                $json = str_ireplace('"{' . $key . '}"', array_get($arguments[0], $value, null), $json);
+                $json = str_ireplace('"{' . $key . '}"', Arr::get($arguments[0], $value, null), $json);
             } else {
-                $json = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, null), $json);
+                $json = str_ireplace('{' . $key . '}', Arr::get($arguments[0], $value, null), $json);
             }
         }
         $mapping = json_decode($json, true);
@@ -530,13 +532,13 @@ class ApiBuilder
      */
     protected function processFormParamsMappings($arguments, $api): array
     {
-        $json = json_encode(array_get($api, 'form_params', []));
+        $json = json_encode(Arr::get($api, 'form_params', []));
 
-        foreach (array_get($api, 'mappings.form_params', []) as $key => $value) {
+        foreach (Arr::get($api, 'mappings.form_params', []) as $key => $value) {
             //Remove array key which is nullable, Need to specify "nullable" in api_helper.php config file.
             if (stripos($value, 'nullable|') !== false) {
                 $values = explode('|', $value);
-                if (array_get($arguments[0], $values[1]) === null || array_get($arguments[0], $values[1]) === '') {
+                if (Arr::get($arguments[0], $values[1]) === null || Arr::get($arguments[0], $values[1]) === '') {
                     $stringToArray = json_decode($json, true);
                     unset($stringToArray[$key]);
                     $json = json_encode($stringToArray);
@@ -551,11 +553,11 @@ class ApiBuilder
                 if (is_callable($callable)) {
                     $json = str_ireplace('"{' . $key . '}"', (call_user_func($callable, $arguments[0])), $json);
                 }
-            } elseif ($this->checkBool(array_get($arguments[0], $value))) {
+            } elseif ($this->checkBool(Arr::get($arguments[0], $value))) {
                 // Check boolean
-                $json = str_ireplace('"{' . $key . '}"', array_get($arguments[0], $value, null), $json);
+                $json = str_ireplace('"{' . $key . '}"', Arr::get($arguments[0], $value, null), $json);
             } else {
-                $json = str_ireplace('{' . $key . '}', array_get($arguments[0], $value, null), $json);
+                $json = str_ireplace('{' . $key . '}', Arr::get($arguments[0], $value, null), $json);
             }
         }
         return json_decode($json, true);
@@ -571,20 +573,20 @@ class ApiBuilder
     {
         // get xml config
         $rootElementName = (!empty($api['xml_config']['root_element_name'])) ? $api['xml_config']['root_element_name'] : ((!empty(config('api_helper.connections.' . $this->connection . '.root'))) ? config('api_helper.connections.' . $this->connection . 'root') : 'request');
-        $attributes = array_get($api, 'xml_config.attributes');
-        $useUnderScores = array_get($api, 'xml_config.use_underscores', true);
-        $encoding = array_get($api, 'xml_config.encoding', true);
+        $attributes = Arr::get($api, 'xml_config.attributes');
+        $useUnderScores = Arr::get($api, 'xml_config.use_underscores', true);
+        $encoding = Arr::get($api, 'xml_config.encoding', true);
 
-        $xml = ArrayToXml::convert(array_get($api, 'body', []), [
+        $xml = ArrayToXml::convert(Arr::get($api, 'body', []), [
             'rootElementName' => $rootElementName,
             '_attributes' => $attributes,
         ], $useUnderScores, $encoding);
 
-        foreach (array_get($api, 'mappings.body', []) as $key => $value) {
+        foreach (Arr::get($api, 'mappings.body', []) as $key => $value) {
             // TODO: we can add more support like validator
             if (stripos($value, 'nullable|') !== false) {
                 $values = explode('|', $value);
-                if (array_get($arguments[0], $values[1]) === null || array_get($arguments[0], $values[1]) === '') {
+                if (Arr::get($arguments[0], $values[1]) === null || Arr::get($arguments[0], $values[1]) === '') {
                     $xml = str_ireplace('<' . $key . '>{' . $key . '}</' . $key . '>', '', $xml);
                     continue;
                 } else {
@@ -597,16 +599,16 @@ class ApiBuilder
                 if (is_callable($callable)) {
                     $xml = str_ireplace('{' . $key . '}', $this->escapeSpecialCharacters((call_user_func($callable, $arguments[0]))), $xml);
                 }
-            } elseif ($this->checkBool(array_get($arguments[0], $value))) {
+            } elseif ($this->checkBool(Arr::get($arguments[0], $value))) {
                 // Check boolean
-                if (!empty(array_get($arguments[0], $value))) {
-                    $xml = str_ireplace('{' . $key . '}', array_get($arguments[0], $value), $xml);
+                if (!empty(Arr::get($arguments[0], $value))) {
+                    $xml = str_ireplace('{' . $key . '}', Arr::get($arguments[0], $value), $xml);
                 } else {
                     $xml = str_ireplace('<' . $key . '>{' . $key . '}</' . $key . '>', '', $xml);
                 }
             } else {
-                if (!empty(array_get($arguments[0], $value))) {
-                    $xml = str_ireplace('{' . $key . '}', $this->escapeSpecialCharacters(array_get($arguments[0], $value)), $xml);
+                if (!empty(Arr::get($arguments[0], $value))) {
+                    $xml = str_ireplace('{' . $key . '}', $this->escapeSpecialCharacters(Arr::get($arguments[0], $value)), $xml);
                 } else {
                     $xml = str_ireplace('<' . $key . '>{' . $key . '}</' . $key . '>', '', $xml);
                 }
@@ -665,7 +667,7 @@ class ApiBuilder
 
         foreach ($paths as $field) {
 
-            $string = array_get($data, $field);
+            $string = Arr::get($data, $field);
 
             if (stripos($string, '@') !== false) {
                 $obfuscatedString = ObfuscationHelper::obfuscate($string, 4);
