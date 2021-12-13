@@ -27,6 +27,8 @@ workflows:
             - php73-laravel58-prefer-lowest
             - php73-laravel60
             - php73-laravel60-prefer-lowest
+            - php73-laravel70
+            - php73-laravel70-prefer-lowest
 
 jobs:
     php72-laravel58-prefer-lowest:
@@ -81,3 +83,16 @@ jobs:
         steps:
             - install_and_test:
                   laravel: 6.0.*
+    php73-laravel70-prefer-lowest:
+        docker:
+            - image: circleci/php:7.3
+        steps:
+            - install_and_test:
+                  laravel: 7.0.*
+                  composer_flags: --prefer-lowest
+    php73-laravel70:
+        docker:
+            - image: circleci/php:7.3
+        steps:
+            - install_and_test:
+                  laravel: 7.0.*
