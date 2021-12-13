@@ -12,7 +12,7 @@
     "require": {
         "guzzlehttp/guzzle": "^7.0",
         "php": ">=7.2.5",
-        "spatie/array-to-xml": "^2.15.0",
+        "spatie/array-to-xml": "^2.14.0",
         "adbario/php-dot-notation": "^2.x.dev"
     },
     "minimum-stability": "stable",
