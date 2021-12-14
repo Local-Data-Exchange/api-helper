@@ -1,4 +1,29 @@
 # CHANGELOG
+
+## 7.0.0
+
+**Upgrade package to support laravel 7** [Ref](https://laravel.com/docs/7.x/upgrade)
+
+- Upgrade packages to support laravel 7.
+- php `^7.2.5` or higher
+- array-to-xml `~2.14.0`,
+- php-dot-notation `^2.x.dev`
+- phpunit `8.5` 
+
+
+## 6.0.0
+
+**Upgrade package to support laravel 6**
+
+- Syantaxt upgraded to support laravel 6.*
+
+
+## 0.1.30
+- Fixed return type issue when json_decode fails. [Hotfix]
+
+## 0.1.29
+- Fixed json mapping condition for empty body. [Hotfix]
+
 ## 0.1.28
 - Perform json mapping if body is given.
 
