@@ -20,6 +20,7 @@ workflows:
     build:
         jobs:
             - php73-laravel80
+            - php74-laravel80
 
 jobs:
     php72-laravel58-prefer-lowest:
@@ -77,6 +78,12 @@ jobs:
     php73-laravel80:
         docker:
             - image: circleci/php:7.3
+        steps:
+            - install_and_test:
+                  laravel: 8.0.*
+    php74-laravel80:
+        docker:
+            - image: circleci/php:7.4
         steps:
             - install_and_test:
                   laravel: 8.0.*
