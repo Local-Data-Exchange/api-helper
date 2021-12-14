@@ -10,10 +10,10 @@
         "laravel api"
     ],
     "require": {
-        "guzzlehttp/guzzle": "^6.3",
-        "php": ">=7.0.0",
-        "spatie/array-to-xml": "^2.8",
-        "adbario/php-dot-notation": "^2.2.0"
+        "guzzlehttp/guzzle": "^7.0",
+        "php": ">=7.2.5",
+        "spatie/array-to-xml": "~2.14.0",
+        "adbario/php-dot-notation": "^2.x.dev"
     },
     "minimum-stability": "stable",
     "prefer-stable": true,
@@ -38,7 +38,7 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.0|^8.0",
-        "orchestra/testbench": "~3.6.0|~3.7.0|~3.8.0"
+        "phpunit/phpunit": "^7.0|^8.0|^8.5",
+        "orchestra/testbench": "~3.6.0|~3.7.0|~3.8.0|~5.0.0"
     }
 }
