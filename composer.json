@@ -11,8 +11,8 @@
     ],
     "require": {
         "guzzlehttp/guzzle": "^7.0.1",
-        "php": "^7.4",
-        "spatie/array-to-xml": "~2.15.1",
+        "php": "^7.4|^8.0",
+        "spatie/array-to-xml": "^2.16.0",
         "adbario/php-dot-notation": "^2.x.dev"
     },
     "minimum-stability": "stable",
