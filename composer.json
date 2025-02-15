@@ -1,5 +1,5 @@
 {
-    "name": "lde/api-helper",
+    "name": "lde/api-helper-demo",
     "description": "Laravel package to help consume REST and XML APIs with little effort.",
     "license": "MIT",
     "keywords": [
