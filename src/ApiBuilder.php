@@ -28,6 +28,8 @@ class ApiBuilder
 
     public $sensitiveFields = [];
 
+    public $client;
+
     /**
      * Sets API connection
      *
@@ -66,6 +68,8 @@ class ApiBuilder
 
         // Set the base url
         $this->baseUrl = config('api_helper.connections.' . $this->connection . '.base_url');
+
+        $this->client = new Client();
 
         return $this;
     }
@@ -188,7 +192,7 @@ class ApiBuilder
 
                     break;
                 case 'xml':
-
+                    
                     switch ($method) {
                         // only post and put have a body
                         case 'PATCH':
@@ -258,7 +262,7 @@ class ApiBuilder
                 }
                 StatsHelper::incHistogram($bucketName, (float) (microtime(true) - $startTime), [$this->connection, $name, $object->meta->status_code], "Response time for external API calls.", ['destination', 'endpoint', 'status']);
             }
-
+            
             return $object;
 
         } else {
@@ -290,20 +294,18 @@ class ApiBuilder
         while ($success == false && $tries <= $retries) {
             $tries++;
 
-            $client = new Client();
+            if (is_null($this->client)) {
+                $this->client = new Client();
+            }
+
+            $client = $this->client;
             try {
 
                 // Merge params
                 $params = array_merge($this->requestOptions, $params);
                 if ($this->type == "xml") {
 
-                    Log::debug('Headers data: ', [
-                        'data' => $uri,
-                    ]);
-
-                    // Send request
-                    $response = $client->request($method, $uri, $params);
-
+                    $response = $client->request($method, $uri, $params);                    
                     // If we got this far, we have a response.
 
                     // convert xml string into an object
