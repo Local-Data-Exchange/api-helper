@@ -6,4 +6,3 @@ services:
     command: sleep infinity
     volumes:
       - .:/app
-      
