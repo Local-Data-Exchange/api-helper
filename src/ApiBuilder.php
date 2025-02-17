@@ -2,17 +2,18 @@
 
 namespace Lde\ApiHelper;
 
+use Adbar\Dot;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Arr;
 use Lde\ApiHelper\ApiResponse;
-use Lde\ApiHelper\Events\ApiCallCompleted;
+use Spatie\ArrayToXml\ArrayToXml;
+use Illuminate\Support\Facades\Log;
+use Lde\ApiHelper\Helpers\StatsHelper;
 use Lde\ApiHelper\Events\ApiCallStarting;
+use GuzzleHttp\Exception\RequestException;
+use Lde\ApiHelper\Events\ApiCallCompleted;
 use Lde\ApiHelper\Helpers\HelperException;
 use Lde\ApiHelper\Helpers\ObfuscationHelper;
-use Lde\ApiHelper\Helpers\StatsHelper;
-use Spatie\ArrayToXml\ArrayToXml;
-use Illuminate\Support\Arr;
 
 class ApiBuilder
 {
@@ -27,6 +28,8 @@ class ApiBuilder
     public $name;
 
     public $sensitiveFields = [];
+
+    public $client = null;
 
     /**
      * Sets API connection
@@ -52,7 +55,7 @@ class ApiBuilder
             throw new HelperException("Connection '$connection' not found!");
         }
 
-        // Set the request options if provided for this conenction. Else use default ones.
+        // Set the request options if provided for this connection. Else use default ones.
         if (Arr::get($conn, 'default_request_options')) {
             $additionalHeaders = $this->requestOptions['headers'];
             $default = Arr::get($conn, 'default_request_options.headers');
@@ -66,6 +69,8 @@ class ApiBuilder
 
         // Set the base url
         $this->baseUrl = config('api_helper.connections.' . $this->connection . '.base_url');
+
+        $this->client = new Client();
 
         return $this;
     }
@@ -188,7 +193,7 @@ class ApiBuilder
 
                     break;
                 case 'xml':
-
+                    
                     switch ($method) {
                         // only post and put have a body
                         case 'PATCH':
@@ -258,7 +263,7 @@ class ApiBuilder
                 }
                 StatsHelper::incHistogram($bucketName, (float) (microtime(true) - $startTime), [$this->connection, $name, $object->meta->status_code], "Response time for external API calls.", ['destination', 'endpoint', 'status']);
             }
-
+            
             return $object;
 
         } else {
@@ -272,7 +277,7 @@ class ApiBuilder
      * @param $params
      *
      * @link http://docs.guzzlephp.org/en/stable/request-options.html
-     * @return array
+     * @return object
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function call($method, $uri, $params = [])
@@ -290,7 +295,11 @@ class ApiBuilder
         while ($success == false && $tries <= $retries) {
             $tries++;
 
-            $client = new Client();
+            if (is_null($this->client)) {
+                $this->client = new Client();
+            }
+
+            $client = $this->client;
             try {
 
                 // Merge params
@@ -301,9 +310,7 @@ class ApiBuilder
                         'data' => $uri,
                     ]);
 
-                    // Send request
-                    $response = $client->request($method, $uri, $params);
-
+                    $response = $client->request($method, $uri, $params);                    
                     // If we got this far, we have a response.
 
                     // convert xml string into an object
@@ -623,7 +630,7 @@ class ApiBuilder
      * @param  String $string
      *
      * @return String $string
-     * Remove special characters fomr xml string before request to the api
+     * Remove special characters form xml string before request to the api
      */
 
     private function escapeSpecialCharacters(String $string): String
@@ -663,7 +670,7 @@ class ApiBuilder
      */
     protected function maskFieldValues(array &$data, array $paths)
     {
-        $dot = new \Adbar\Dot($data);
+        $dot = new Dot($data);
 
         foreach ($paths as $field) {
 

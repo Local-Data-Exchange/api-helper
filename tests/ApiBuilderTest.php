@@ -2,7 +2,12 @@
 
 namespace Lde\ApiHelper\Tests;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use Lde\ApiHelper\ApiBuilder;
+use GuzzleHttp\Handler\MockHandler;
+use Symfony\Component\HttpFoundation\Response as HTTPStatus;
 
 class ApiBuilderTest extends TestCase
 {
@@ -72,8 +77,31 @@ class ApiBuilderTest extends TestCase
 
     public function testHttpBinPostXml()
     {
+        // mock api call as URL not working
+        $xml =
+            '<?xml version="1.0" encoding="UTF8"?>
+            <request xmlns="https://github.com/spatie/array-to-xml">
+                <request>
+                    <attributes>
+                        <class>Barbarian</class>
+                    </attributes>
+                    <name>John</name>
+                    <weapon>Dagger</weapon>
+                </request>
+            </request>';
+
+        $mock = new MockHandler([
+            new Response(HTTPStatus::HTTP_OK, ['Content-Type' => 'application/xml'], $xml),
+        ]);
+
+        $handlerStack = HandlerStack::create($mock);
+        $client = new Client(['handler' => $handlerStack]);
+
+        // Bind the mock to Laravel's container
+
         $apibuilder = new ApiBuilder();
         $api = $apibuilder->api('mockbin');
+        $api->client = $client;
         $response = $api->echo(['request' => ['name' => 'John', 'class' => 'Barbarian', 'weapon' => 'Dagger']]);
         $val = $response->body['request'];
         self::assertTrue($response->success);
