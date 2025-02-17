@@ -2,17 +2,18 @@
 
 namespace Lde\ApiHelper;
 
+use Adbar\Dot;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Arr;
 use Lde\ApiHelper\ApiResponse;
-use Lde\ApiHelper\Events\ApiCallCompleted;
+use Spatie\ArrayToXml\ArrayToXml;
+use Illuminate\Support\Facades\Log;
+use Lde\ApiHelper\Helpers\StatsHelper;
 use Lde\ApiHelper\Events\ApiCallStarting;
+use GuzzleHttp\Exception\RequestException;
+use Lde\ApiHelper\Events\ApiCallCompleted;
 use Lde\ApiHelper\Helpers\HelperException;
 use Lde\ApiHelper\Helpers\ObfuscationHelper;
-use Lde\ApiHelper\Helpers\StatsHelper;
-use Spatie\ArrayToXml\ArrayToXml;
-use Illuminate\Support\Arr;
 
 class ApiBuilder
 {
@@ -28,7 +29,7 @@ class ApiBuilder
 
     public $sensitiveFields = [];
 
-    public $client;
+    public $client = null;
 
     /**
      * Sets API connection
@@ -54,7 +55,7 @@ class ApiBuilder
             throw new HelperException("Connection '$connection' not found!");
         }
 
-        // Set the request options if provided for this conenction. Else use default ones.
+        // Set the request options if provided for this connection. Else use default ones.
         if (Arr::get($conn, 'default_request_options')) {
             $additionalHeaders = $this->requestOptions['headers'];
             $default = Arr::get($conn, 'default_request_options.headers');
@@ -276,7 +277,7 @@ class ApiBuilder
      * @param $params
      *
      * @link http://docs.guzzlephp.org/en/stable/request-options.html
-     * @return array
+     * @return object
      * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function call($method, $uri, $params = [])
@@ -304,6 +305,10 @@ class ApiBuilder
                 // Merge params
                 $params = array_merge($this->requestOptions, $params);
                 if ($this->type == "xml") {
+
+                    Log::debug('Headers data: ', [
+                        'data' => $uri,
+                    ]);
 
                     $response = $client->request($method, $uri, $params);                    
                     // If we got this far, we have a response.
@@ -625,7 +630,7 @@ class ApiBuilder
      * @param  String $string
      *
      * @return String $string
-     * Remove special characters fomr xml string before request to the api
+     * Remove special characters form xml string before request to the api
      */
 
     private function escapeSpecialCharacters(String $string): String
@@ -665,7 +670,7 @@ class ApiBuilder
      */
     protected function maskFieldValues(array &$data, array $paths)
     {
-        $dot = new \Adbar\Dot($data);
+        $dot = new Dot($data);
 
         foreach ($paths as $field) {
 
